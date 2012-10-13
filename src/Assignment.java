@@ -16,7 +16,7 @@ import java.sql.Timestamp;
  *           + The previous two tasks could be achieved by cloning your week 5 repository
  *        + Apply access modifiers to your Task class
  *            + All instances variables should be made private
- *            Determine what functionality and data you want to make accessible to outside callers via methods
+ *            + Determine what functionality and data you want to make accessible to outside callers via methods
  *                Some examples could include the following but I'm not trying to design your solutions.  These are just ideas
  *                    isComplete(): bool
  *                    getCompletionDate(): Calendar
@@ -24,16 +24,16 @@ import java.sql.Timestamp;
  *                    getDescription(): String
  *                    hasPrerequisite(): bool
  *                    getPrerequisite(): Task
- *            Implement whatever functionality you come up with in the last step
+ *            + Implement whatever functionality you come up with in the last step
  *        Create Task hierarchy 
- *            Consider different kinds of tasks (todo items) your todo list could have. 
- *                What extra functionality or behavior would they have?
- *            Consider what functionality and data would be common to all tasks
+ *            + Consider different kinds of tasks (todo items) your todo list could have. 
+ *                + What extra functionality or behavior would they have?
+ *            + Consider what functionality and data would be common to all tasks
  *            Refactor your Task class
- *                Make the base Task class abstract
- *                Hide all instance variables with private modifiers if you didn't already
- *                Implement the common functionality from above as methods
- *                Add accessors (getters and/or setters) for any member variables you think need them
+ *                + Make the base Task class abstract
+ *                + Hide all instance variables with private modifiers if you didn't already
+ *                + Implement the common functionality from above as methods
+ *                + Add accessors (getters and/or setters) for any member variables you think need them
  *                    You don't necessarily need both
  *                    Its easier to add one later if you need it than to take one away
  *            Override methods in Task children when necessary
@@ -57,14 +57,14 @@ public class Assignment {
 		StringBuffer myTaskName = new StringBuffer("My Task ");
 		
 		// Instantiate new task objects
-		Task task1 = new Task(myTaskName.append("1"), (System.currentTimeMillis() + 1));
-		Task task2 = new Task(myTaskName.replace((myTaskName.length() - 1)
+		GeneralTask task1 = new GeneralTask(myTaskName.append("1"), (System.currentTimeMillis() + 1));
+		GeneralTask generalTask = new GeneralTask(myTaskName.replace((myTaskName.length() - 1)
 				, (myTaskName.length()), "2"), (System.currentTimeMillis() + 2));
-		Task task3 = new Task();
+		GeneralTask task3 = new GeneralTask();
 		
 		// Output new task object contents
 		System.out.println(task1.toString(Task.NAME_TO_STR));
-		System.out.println(task2.toString(Task.NAME_TO_STR, Task.START_DATE_TO_STR));
+		System.out.println(generalTask.toString(Task.NAME_TO_STR, Task.START_DATE_TO_STR));
 		System.out.println(task3);
 		
 	} // main()
@@ -105,17 +105,38 @@ public class Assignment {
 	
 } // CLASS Assignment
 
+
 /**
- * @author Wallace Mooncai
- * @since 0.0
  * 
- * Class Task is a basic task class
+ * @author W. Mooncai
+ * @since 0.6
+ * 
+ * Task Class Interface
  * 
  * @param MAX_NAME_LEN			Maximum length of the Task name
  * 
  * @param NAME_TO_STR			Flag for toString() to output the Task Name
  * @param START_DATE_TO_STR		Flag for toString() to output the Start Date/Time
  * @param END_DATE_TO_STR		Flag for toString() to output the End Date/Time
+ * 
+ */
+interface TaskInterface {
+	
+	// Constants
+	public static final int MAX_NAME_LEN = 20;
+	
+	public static final int NAME_TO_STR = 10;
+	public static final int START_DATE_TO_STR = 20;
+	public static final int END_DATE_TO_STR = 30;
+	public static final int COMPETED_TO_STR = 40;
+	
+} // INTERFACE TaskInterface
+
+/**
+ * @author Wallace Mooncai
+ * @since 0.0
+ * 
+ * Class Task is a basic task class
  * 
  * @param taskName				Name of the Task
  * @param startDateTime			Task Start Date/Time
@@ -124,22 +145,16 @@ public class Assignment {
  * 
  */
 
-abstract class Task {
+abstract class Task implements TaskInterface {
 
-	// Constants
+	// Private Constant
 	private static final String MY_TASK_NAME = "My Task ";
-	public static final int MAX_NAME_LEN = 20;
-	
-	public static final int NAME_TO_STR = 10;
-	public static final int START_DATE_TO_STR = 20;
-	public static final int END_DATE_TO_STR = 30;
-	public static final int COMPETED_TO_STR = 40;
 	
 	// Fields
-	private StringBuffer taskName = new StringBuffer(MAX_NAME_LEN);
-	private long startDateTime;
-	private long endDateTime;
-	private boolean completed;
+	protected StringBuffer taskName = new StringBuffer(MAX_NAME_LEN);
+	protected long startDateTime;
+	protected long endDateTime;
+	protected boolean completed;
 	
 	// ************************************ Constructor - no args ************************************
 	/**
@@ -168,13 +183,13 @@ abstract class Task {
 	 * @since 0.0
 	 * 
 	 * @param taskN			Task name
-	 * @param dateTime		Set the start date / time.  End date / time is set 1ms prior to start date / time.
+	 * @param startDT		Set the start date / time.  End date / time is set 1ms prior to start date / time.
 	 * 
 	 */
-	public Task(StringBuffer taskN, long dateTime) {
+	public Task(StringBuffer taskN, long startDT) {
 		
-		startDateTime = dateTime;
-		endDateTime = dateTime - 1;
+		startDateTime = startDT;
+		endDateTime = startDT - 1;
 		
 		if (taskN.length() > MAX_NAME_LEN) {
 			taskName = (StringBuffer) taskN.subSequence(0, MAX_NAME_LEN);
@@ -197,9 +212,7 @@ abstract class Task {
 		startDateTime = startDT;
 		endDateTime = startDateTime - 1;
 		
-		if (taskN.length() > MAX_NAME_LEN) {
-			taskName = (StringBuffer) taskN.subSequence(0, MAX_NAME_LEN);
-		} else taskName.replace(0, taskName.length(), taskN.toString());
+		sanitizeStrBuffLen(taskName, taskN, MAX_NAME_LEN);
 		
 	} // Task() - all args
 	
@@ -207,6 +220,8 @@ abstract class Task {
 	
 	/**
 	 * Return task completed status
+	 * @since 0.6
+	 * 
 	 * @return		endDateTime
 	 */
 	public boolean getCompleted(){
@@ -217,6 +232,8 @@ abstract class Task {
 	
 	/**
 	 * Return task end date / time
+	 * @since 0.6
+	 * 
 	 * @return		endDateTime
 	 */
 	public long getEndDateTime(){
@@ -227,6 +244,8 @@ abstract class Task {
 
 	/**
 	 * Return task start date / time
+	 * @since 0.6
+	 * 
 	 * @return		startDateTime
 	 */
 	public long getStartDateTime(){
@@ -237,6 +256,8 @@ abstract class Task {
 	
 	/**
 	 * Return Task Name
+	 * @since 0.6
+	 * 
 	 * @return		taskName
 	 */
 	public StringBuffer getTaskN() {
@@ -258,6 +279,8 @@ abstract class Task {
 	
 	/**
 	 * Set task end date / time
+	 * @since 0.6
+	 * 
 	 * @return		success /fail
 	 */
 	public boolean setEndDateTime(long end){
@@ -272,36 +295,72 @@ abstract class Task {
 	} // setEndDateTime()
 
 	/**
-	 * Return task start date / time
+	 * Set task start date / time
+	 * @since 0.6
+	 * 
 	 * @return		success /fail
 	 */
-	public boolean setStartEndDateTime(long start) {
+	public boolean setStartDateTime(long start) {
 		
+		startDateTime = start;
+		
+		if ( startDateTime >= System.currentTimeMillis() ) {
+			return true;
+		} else return false;
 		
 	} // setStartDateTime()
 	
 	
 	/**
 	 * Set task name
+	 * @since 0.6
+	 * 
 	 * @return		taskName
 	 */
-	public boolean setTaskName(String name) {
+	public boolean setTaskName(StringBuffer name) {
 		
-		if (taskName.length() < MAX_NAME_LEN) {
-			taskName.replace(0, taskName.length(), name);
-			return true;
-		}
+		return sanitizeStrBuffLen(taskName, name, MAX_NAME_LEN);
 		
 	} // setTaskName()
 	
+	/**
+	 * Sanitize an input string based on input string length and assign it to a class member string
+	 * 
+	 * @param memberString		member string receiving the newString
+	 * @param newString			input string
+	 * @param maxLen			max length of the member string as defined in the task object interface
+	 * @return					assignment status; a bad member string length returns false
+	 * 
+	 */
+	protected boolean sanitizeStrBuffLen(StringBuffer memberString, StringBuffer newString, int maxLen) {
+		
+		// Sanitize newString and assign it to memberString
+		if (newString.length() > 0) {
+			if (newString.length() <= maxLen) {
+				memberString.replace(0, (maxLen - 1), newString.toString());
+				return true;
+			} else {
+				// Input notes is too long, so truncate and save it
+				memberString.replace(0, (maxLen - 1), newString.substring(0, maxLen));
+				return true;
+			} // if-else inner
+		} // if outer
+		
+		return false;
+		
+	} // sanitizeStrBuffLen()
 	
 	// ***************************************** toString() ******************************************
+	
 	/**
 	 * Function toString(Field Constant Flags) to pretty output desired member fields.
+	 * The order of the field flags determines their output order.
 	 * @since 0.0
 	 * 
 	 * @param Field Constant Flags		Public flags to indicate which member fields to output
-	 * @return String describing all member fields
+	 * @return String describing selected member fields
+	 * 
+	 * @see TaskInterface for available field flags to choose from
 	 * 
 	 */
 	public String toString(int ... varsToString) {
@@ -331,7 +390,7 @@ abstract class Task {
 	
 	/**
 	 * toString() will pretty output all Task fields
-	 * @since 0.0
+	 * @since 0.6
 	 */
 	public String toString() {
 		
@@ -341,3 +400,307 @@ abstract class Task {
 	} // toString()
 	
 } // CLASS Task
+
+// ****************************************** GeneralTask *********************************************
+
+/**
+ * 
+ * @author W. Mooncai
+ * @since 0.6
+ * 
+ * General Task Class Interface
+ * 
+ * @param MAX_NOTES_LEN			Maximum length of the Task notes
+ * 
+ * @param NAME_TO_STR			Flag for toString() to output the Task Notes
+ * 
+ */
+interface GeneralTaskInterface {
+	
+	// Constants
+	public static final int MAX_NOTES_LEN = 100;
+	
+	public static final int NOTES_TO_STR = 50;
+	
+} // INTERFACE GeneralTaskInterface
+
+/**
+ * 
+ * @author W. Mooncai
+ * @since 0.6
+ * 
+ * GeneralTask Class
+ * 
+ * @param taskNotes		task notes field
+ * 
+ */
+class GeneralTask extends Task implements GeneralTaskInterface {
+	
+	protected StringBuffer taskNotes = new StringBuffer(MAX_NOTES_LEN);
+	
+	// ************************************ Constructor - no args ************************************
+	/**
+	 * Basic GeneralTask constructor with no arguments
+	 * 
+	 */
+	public GeneralTask() {
+		
+		super();
+		
+	} // GeneralTask()
+	
+	// *********************** Constructor - with task name and start time args **********************
+	/**
+	 * GeneralTask Constructor with arguments
+	 * @since 0.6
+	 * 
+	 * @param taskN			Task name
+	 * @param sDateTime		Set the start date / time.  End date / time is set 1ms prior to start date / time.
+	 * 
+	 */
+	public GeneralTask(StringBuffer taskN, long sDateTime) {
+		
+		super(taskN, sDateTime);
+		
+	} // GeneralTask() - 2 args
+
+	// ********************************* Constructor - with all super args *********************************
+	/**
+	 * Constructor accepting arguments for all member fields
+	 * @since 0.6
+	 * 
+	 * @param startDT		Start date / time
+	 * @param endDT			End date / time
+	 * @param tName			Task name
+	 */
+	public GeneralTask(long startDT, long endDT, StringBuffer tName) {
+		
+		super(startDT, endDT, tName);
+		
+		sanitizeStrBuffLen(taskName, tName, MAX_NAME_LEN);
+		
+	} // GeneralTask() - all GeneralTask args
+	
+	// ********************************* Constructor - with all args *********************************
+	/**
+	 * Constructor accepting arguments for all member fields
+	 * @since 0.6
+	 * 
+	 * @param startDT		Start date / time
+	 * @param endDT			End date / time
+	 * @param tName			Task name
+	 */
+	public GeneralTask(long startDT, long endDT, StringBuffer tName, StringBuffer tNotes) {
+		
+		super(startDT, endDT, tName);
+		
+		sanitizeStrBuffLen(taskName, tName, MAX_NAME_LEN);
+		sanitizeStrBuffLen(taskNotes, tNotes, MAX_NOTES_LEN);
+
+	} // GeneralTask() - all args
+	
+	// **************************************** GETTERS ************************************************
+	
+	/**
+	 * Return task notes
+	 * @since 0.6
+	 * 
+	 * @return		endDateTime
+	 */
+	public StringBuffer getTaskNotes(){
+		
+		return taskNotes;
+		
+	} // getTaskNotes()
+	
+	// **************************************** SETTERS ************************************************
+	
+	/**
+	 * Set task notes
+	 * 
+	 * @since 0.6
+	 * 
+	 * @return		endDateTime
+	 */
+	public boolean setTaskNotes(StringBuffer newString) {
+		
+		return sanitizeStrBuffLen(taskNotes, newString, MAX_NOTES_LEN);
+		
+	} // setTaskNotes()
+	
+	// ***************************************** toString() ******************************************
+	
+	/**
+	 * Function toString(Field Constant Flags) to pretty output desired member fields.
+	 * The order of the field flags determines their output order.
+	 * @since 0.6
+	 * 
+	 * @param Field Constant Flags		Public flags to indicate which member fields to output
+	 * 
+	 * @return	String describing selected member fields
+	 * 
+	 * 
+	 * @see GeneralTaskInterface and TaskInterface for available field flags to choose from
+	 * 
+	 */
+	public String toString(int ... varsToString) {
+
+		StringBuffer returnString = new StringBuffer(super.toString(varsToString));
+
+		for (int memberVar : varsToString) {
+			// Although we just have one new member field, I left the switch in place for future expansion
+			switch (memberVar) {
+			case NOTES_TO_STR:
+				returnString.append("\n-    Task Notes: " + taskNotes.toString());
+				break;
+			} // switch
+		} // for loop
+		
+		return returnString.toString();
+		
+	} // toString(args)
+	
+	/**
+	 * toString() will pretty output all Task fields
+	 * @since 0.6
+	 * 
+	 * @return String describing all member fields
+	 */
+	public String toString() {
+		
+		return toString(NAME_TO_STR, START_DATE_TO_STR, END_DATE_TO_STR, COMPETED_TO_STR, NOTES_TO_STR);
+		
+	} // toString()
+	
+} // CLASS GeneralTask
+
+// #############################################################################################333
+
+//****************************************** GeneralTask *********************************************
+
+/**
+* 
+* @author W. Mooncai
+* @since 0.6
+* 
+* Homework Task Class Interface
+* 
+* @param MAX_NOTES_LEN			Maximum length of the Task notes
+* 
+* @param DUEDATE_TO_STR			Flag for toString() to output the task duedate
+* 
+*/
+interface HomeworkTaskInterface {
+	
+	// Constants
+	public static final int MAX_NOTES_LEN = 500;
+	public static final int MAX_GRADE_LEN = 2;
+	public static final int MAX_COURSENAME_LEN = 20;
+	public static final int DUEDATE_TO_STR = 60;
+	
+} // INTERFACE GeneralTaskInterface
+
+/**
+* 
+* @author W. Mooncai
+* @since 0.6
+* 
+* GeneralTask Class
+* 
+* @param dueDate		task duedate field
+* 
+*/
+class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
+	
+	long dueDate = System.currentTimeMillis();
+	String courseName = new String();
+	StringBuffer grade = new StringBuffer(2);
+	
+	
+	// ************************************ Constructor - no args ************************************
+	/**
+	 * Basic HomeworkTask constructor with no arguments
+	 * 
+	 */
+	public HomeworkTask() {
+		
+		super();
+		
+	} // GeneralTask()
+	
+	// *********************** Constructor - with task name and start time args **********************
+	/**
+	 * HomeworkTask Constructor with arguments
+	 * @since 0.6
+	 * 
+	 * @param taskN			Task name
+	 * @param sDateTime		Set the start date / time.  End date / time is set 1ms prior to start date / time.
+	 * 
+	 */
+	public HomeworkTask(StringBuffer taskN, long sDateTime) {
+		
+		super(taskN, sDateTime);
+		
+	} // GeneralTask() - 2 args
+		
+	// ********************************* Constructor - with all args *********************************
+	/**
+	 * Constructor accepting arguments for all member fields
+	 * @since 0.6
+	 * 
+	 * @param startDT		Start date / time
+	 * @param endDT			End date / time
+	 * @param taskN			Task name
+	 */
+	
+	public HomeworkTask(long startDT, long endDT, StringBuffer tNotes) {
+		
+		super(startDT, endDT, tNotes);
+		
+	} // GeneralTask() - all args
+	
+	// ***************************************** toString() ******************************************
+	
+	/**
+	 * Function toString(Field Constant Flags) to pretty output desired member fields.
+	 * The order of the field flags determines their output order.
+	 * @since 0.6
+	 * 
+	 * @param Field Constant Flags		Public flags to indicate which member fields to output
+	 * 
+	 * @return	String describing selected member fields
+	 * 
+	 * 
+	 * @see GeneralTaskInterface and TaskInterface for available field flags to choose from
+	 * 
+	 */
+	public String toString(int ... varsToString) {
+
+		StringBuffer returnString = new StringBuffer(super.toString(varsToString));
+
+		for (int memberVar : varsToString) {
+			// Although we just have one new member field, I left the switch in place for future expansion
+			switch (memberVar) {
+			case NOTES_TO_STR:
+				returnString.append("\n-    Task Notes: " + taskNotes.toString());
+				break;
+			} // switch
+		} // for loop
+		
+		return returnString.toString();
+		
+	} // toString(args)
+	
+	/**
+	 * toString() will pretty output all Task fields
+	 * @since 0.6
+	 * 
+	 * @return String describing all member fields
+	 */
+	public String toString() {
+		
+		return toString(NAME_TO_STR, START_DATE_TO_STR, END_DATE_TO_STR, COMPETED_TO_STR, NOTES_TO_STR);
+		
+	} // toString()
+	
+} // CLASS GeneralTask
