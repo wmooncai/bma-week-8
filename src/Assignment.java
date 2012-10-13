@@ -60,6 +60,7 @@ public class Assignment {
 	 *            Refactor your Task class
 	 *                + Make the base Task class abstract
 	 *                + Hide all instance variables with private modifiers if you didn't already
+	 *                	*** I used protected, otherwise, inheritance wouldn't work
 	 *                + Implement the common functionality from above as methods
 	 *                + Add accessors (getters and/or setters) for any member variables you think need them
 	 *                    You don't necessarily need both
@@ -82,10 +83,18 @@ public class Assignment {
 
 		// Instantiate new task objects
 		GeneralTask generalTask1 = new GeneralTask();
-		HomeworkTask homeworkTask1 = new HomeworkTask(new StringBuffer("New Homework Task 1")
+		
+		HomeworkTask homeworkTask1 = new HomeworkTask("New Homework Task 1"
 													, (System.currentTimeMillis() + 1));
-		HomeworkTask homeworkTask2 = new HomeworkTask(new StringBuffer("New Homework Task 2")
-													, (System.currentTimeMillis() + 2));
+		
+		HomeworkTask homeworkTask2 = new HomeworkTask("New Homework Task 2"
+													, (System.currentTimeMillis() + 2)
+													, (System.currentTimeMillis() + 3)
+													, "Homework Task 2 Note - This was a really big homework."
+													, (System.currentTimeMillis() + 4)
+													, "Building Mobile Apps Fall 2012"
+													, 4.0
+													, 100);
 		
 		// Output new task object contents using printTask()
 		printTask(generalTask1);
@@ -146,12 +155,11 @@ public class Assignment {
 	
 	private static void week5Main() {
 
-		StringBuffer myTaskName = new StringBuffer("My Task ");
+		String myTaskName = "My Task ";
 		
 		// Instantiate new task objects
-		Task task1 = new GeneralTask(myTaskName.append("1"), (System.currentTimeMillis() + 1));
-		Task task2 = new GeneralTask(myTaskName.replace((myTaskName.length() - 1)
-				, (myTaskName.length()), "2"), (System.currentTimeMillis() + 2));
+		Task task1 = new GeneralTask((myTaskName + "1"), (System.currentTimeMillis() + 1));
+		Task task2 = new GeneralTask((myTaskName + "2"), (System.currentTimeMillis() + 2));
 		Task task3 = new GeneralTask();
 		
 		// Output new task object contents
@@ -248,6 +256,8 @@ interface TaskInterface {
  * 
  * Class Task is a basic task class
  * 
+ * - Version 0.6 changed to abstract class
+ * 
  * @param taskName				Name of the Task
  * @param startDateTime			Task Start Date/Time
  * @param endDateTime			Task End Date/Time
@@ -260,7 +270,7 @@ abstract class Task implements TaskInterface {
 	// Private Constant
 	private static final String MY_TASK_NAME = "My Task ";
 	
-	// Fields
+	// Member Fields
 	protected StringBuffer taskName = new StringBuffer(MAX_NAME_LEN);
 	protected long startDateTime;
 	protected long endDateTime;
@@ -280,9 +290,9 @@ abstract class Task implements TaskInterface {
 	 * 
 	 */
 	public Task() {
-		 
-		taskName.replace(0, taskName.length(), MY_TASK_NAME);
-
+		
+		setStrBuff(taskName, MY_TASK_NAME, MAX_NAME_LEN);
+		
 		startDateTime = System.currentTimeMillis();
 		endDateTime = startDateTime - 1;
 				
@@ -294,18 +304,16 @@ abstract class Task implements TaskInterface {
 	 * 
 	 * @since 0.5
 	 * 
-	 * @param taskN			Task name
+	 * @param tName			Task name
 	 * @param startDT		Set the start date / time.  End date / time is set 1ms prior to start date / time.
 	 * 
 	 */
-	public Task(StringBuffer taskN, long startDT) {
+	public Task(String tName, long startDT) {
 		
 		startDateTime = startDT;
 		endDateTime = startDT - 1;
 		
-		if (taskN.length() > MAX_NAME_LEN) {
-			taskName = (StringBuffer) taskN.subSequence(0, MAX_NAME_LEN);
-		} else taskName.replace(0, taskName.length(), taskN.toString());
+		setStrBuff(taskName, tName, MAX_NAME_LEN);
 		
 	} // Task() - 2 args
 		
@@ -317,16 +325,16 @@ abstract class Task implements TaskInterface {
 	 * 
 	 * @param startDT		Start date / time
 	 * @param endDT			End date / time
-	 * @param taskN			Task name
+	 * @param tName			Task name
 	 * 
 	 */
 	
-	public Task(long startDT, long endDT, StringBuffer taskN) {
+	public Task(String tName, long startDT, long endDT) {
 		
 		startDateTime = startDT;
 		endDateTime = startDateTime - 1;
 		
-		sanitizeStrBuffLen(taskName, taskN, MAX_NAME_LEN);
+		setStrBuff(taskName, tName, MAX_NAME_LEN);
 		
 	} // Task() - all args
 	
@@ -340,7 +348,7 @@ abstract class Task implements TaskInterface {
 	 * @return		endDateTime
 	 * 
 	 */
-	public boolean getCompleted(){
+	public boolean isComplete(){
 		
 		return completed;
 		
@@ -391,6 +399,8 @@ abstract class Task implements TaskInterface {
 	/**
 	 * Return all Task Class Interface constants as a formatted String
 	 * 
+	 * @since 0.6
+	 * 
 	 * @return		A formatted String listing all Task Interface constants
 	 * 
 	 */
@@ -410,6 +420,8 @@ abstract class Task implements TaskInterface {
 	/**
 	 * Set task completed status
 	 * 
+	 * @since 0.6
+	 * 
 	 */
 	public void setCompleted(boolean status){
 		
@@ -425,14 +437,14 @@ abstract class Task implements TaskInterface {
 	 * @return		success /fail
 	 * 
 	 */
-	public boolean setEndDateTime(long end){
+	public boolean setEndDateTime(long endDT){
 		
-		if (end <= startDateTime) {
+		if (endDT <= startDateTime) {
 			return false;
 		} else {
-			endDateTime = end;
+			endDateTime = endDT;
 			return true;
-		}
+		} // if
 		
 	} // setEndDateTime()
 
@@ -444,10 +456,11 @@ abstract class Task implements TaskInterface {
 	 * @return		success /fail
 	 * 
 	 */
-	public boolean setStartDateTime(long start) {
+	public boolean setStartDateTime(long startDT) {
 		
-		startDateTime = start;
+		startDateTime = startDT;
 		
+		// start should be in the future
 		if ( startDateTime >= System.currentTimeMillis() ) {
 			return true;
 		} else return false;
@@ -462,9 +475,9 @@ abstract class Task implements TaskInterface {
 	 * @return		taskName
 	 * 
 	 */
-	public boolean setTaskName(String name) {
+	public boolean setTaskName(String tName) {
 		
-		return setTaskName(new StringBuffer(name));
+		return setTaskName(new StringBuffer(tName));
 		
 	} // setTaskName(String)
 	
@@ -476,42 +489,61 @@ abstract class Task implements TaskInterface {
 	 * @return		taskName
 	 * 
 	 */
-	public boolean setTaskName(StringBuffer name) {
+	public boolean setTaskName(StringBuffer tName) {
 		
-		return sanitizeStrBuffLen(taskName, name, MAX_NAME_LEN);
+		return setStrBuff(taskName, tName, MAX_NAME_LEN);
 		
 	} // setTaskName(StringBuffer)
 	
 	/**
-	 * Sanitize an input string based on input string length and assign it to a class member string
+	 * Sanitize an input String and assign it to a StringBuffer
+	 * 
 	 * @since 0.6
 	 * 
-	 * @param memberString		member string receiving the newString
-	 * @param newString			input string
-	 * @param maxLen			max length of the member string as defined in the task object interface
+	 * @param memberString		member field receiving the newString value (this StringBuffer will change with valid newString)
+	 * @param newString			input String
+	 * @param maxLen			max length of the member String as defined in TaskInterface
 	 * 
-	 * @return					assignment status; a bad member string length returns false
+	 * @return					assignment status; a bad String length returns false
 	 * 
 	 */
-	protected boolean sanitizeStrBuffLen(StringBuffer memberString, StringBuffer newString, int maxLen) {
+	protected boolean setStrBuff(StringBuffer memberString, String newString, int maxLen) {
 		
 		// Sanitize newString and assign it to memberString
-		if (newString.length() > 0) {
-			if (newString.length() <= maxLen) {
-				memberString.replace(0, (maxLen - 1), newString.toString());
-				return true;
-			} else {
-				// Input notes is too long, so truncate and save it
-				memberString.replace(0, (maxLen - 1), newString.substring(0, maxLen));
-				return true;
-			} // if-else inner
-		} // if outer
+		if (newString != null) {
+			if (newString.length() > 0) {
+				if (newString.length() <= maxLen) {
+					memberString.replace(0, (maxLen - 1), newString.toString());
+					return true;
+				} else {
+					// Input notes newString is too long, so truncate and assign it
+					memberString.replace(0, (maxLen - 1), newString.substring(0, maxLen));
+					return true;
+				}					// if maxLen
+			} else return false;	// if length > 0
+		} else return false;		// if null
 		
-		return false;
-		
-	} // sanitizeStrBuffLen()
+	} // setStrBuff(.., String, ...)
 	
-	// ***************************************** toString() ******************************************
+	/**
+	 * Wrapper for setStrBuff(..., String, ...) to take an input StringBuffer instead of String
+	 * 
+	 * @since 0.6
+	 * 
+	 * @param memberStringSB	String receiving String input newStringS
+	 * @param newStringSB		Input StringBuffer to be assigned to memberStringSB
+	 * @param maxLength			Maximum length of StringBuffer
+	 * 
+	 * @return					Success / Failure status
+	 * 
+	 */
+	protected boolean setStrBuff(StringBuffer memberStringSB, StringBuffer newStringSB, int maxLength) {
+		
+		return setStrBuff(memberStringSB, newStringSB.toString(), maxLength);
+		
+	} // setStrBuff(..., StringBuffer, ...)
+	
+	// ********************************* Conversions *****************************************
 	
 	/**
 	 * Function toString(Field Constant Flags) to output desired member fields with formatting.
@@ -576,8 +608,7 @@ abstract class Task implements TaskInterface {
  * 
  * General Task Class Interface
  * 
- * @param MAX_NOTES_LEN			Maximum length of the Task notes
- * 
+ * @param MAX_HW_NOTES_LEN			Maximum length of the Task notes
  * @param NAME_TO_STR			Flag for toString() to output the Task Notes
  * 
  */
@@ -607,6 +638,7 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	// ************************************ Constructor - no args ************************************
 	/**
 	 * Basic GeneralTask constructor with no arguments
+	 * 
 	 * @since 0.6
 	 * 
 	 */
@@ -614,31 +646,33 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 		
 		super();
 
-		taskName.replace(0, taskName.length(), "New General Task");
-		taskNotes.replace(0, taskNotes.length(), "New General Task Notes");
+		setStrBuff(taskName, "New General Task", MAX_NAME_LEN);
+		setStrBuff(taskNotes, taskName + " Notes", MAX_NOTES_LEN);
 		
 	} // GeneralTask()
 	
 	// *********************** Constructor - with task name and start time args **********************
 	/**
 	 * GeneralTask Constructor with arguments
+	 * 
 	 * @since 0.6
 	 * 
-	 * @param taskN			Task name
-	 * @param sDateTime		Set the start date / time.  End date / time is set 1ms prior to start date / time.
+	 * @param tName			Task name
+	 * @param startDT		Set the start date / time.  End date / time is set 1ms prior to start date / time.
 	 * 
 	 */
-	public GeneralTask(StringBuffer taskN, long sDateTime) {
+	public GeneralTask(String tName, long startDT) {
 		
-		super(taskN, sDateTime);
+		super(tName, startDT);
 
-		taskNotes.replace(0, taskNotes.length(), "New Homework Task Notes");
+		setStrBuff(taskNotes, taskName + " Notes", MAX_NOTES_LEN);
 		
 	} // GeneralTask() - 2 args
 
 	// ********************************* Constructor - with all super args *********************************
 	/**
 	 * Constructor accepting arguments for all member fields
+	 * 
 	 * @since 0.6
 	 * 
 	 * @param startDT		Start date / time
@@ -646,17 +680,19 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	 * @param tName			Task name
 	 * 
 	 */
-	public GeneralTask(long startDT, long endDT, StringBuffer tName) {
+	public GeneralTask(String tName, long startDT, long endDT) {
 		
-		super(startDT, endDT, tName);
+		super(tName, startDT, endDT);
 		
-		sanitizeStrBuffLen(taskName, tName, MAX_NAME_LEN);
+		// Use a GeneralTask specific taskName
+		setStrBuff(taskName, tName, MAX_NAME_LEN);
 		
 	} // GeneralTask() - all GeneralTask args
 	
 	// ********************************* Constructor - with all args *********************************
 	/**
 	 * Constructor accepting arguments for all member fields
+	 * 
 	 * @since 0.6
 	 * 
 	 * @param startDT		Start date / time
@@ -664,12 +700,12 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	 * @param tName			Task name
 	 * 
 	 */
-	public GeneralTask(long startDT, long endDT, StringBuffer tName, StringBuffer tNotes) {
+	public GeneralTask(String tName, long startDT, long endDT, String tNotes) {
 		
-		super(startDT, endDT, tName);
+		super(tName, startDT, endDT);
 		
-		sanitizeStrBuffLen(taskName, tName, MAX_NAME_LEN);
-		sanitizeStrBuffLen(taskNotes, tNotes, MAX_NOTES_LEN);
+		setStrBuff(taskName, tName, MAX_NAME_LEN);
+		setStrBuff(taskNotes, tNotes, MAX_NOTES_LEN);
 
 	} // GeneralTask() - all args
 	
@@ -677,9 +713,11 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	
 	/**
 	 * Return task notes
+	 * 
 	 * @since 0.6
 	 * 
 	 * @return		endDateTime
+	 * 
 	 */
 	public StringBuffer getTaskNotes() {
 		
@@ -694,25 +732,26 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	 * 
 	 * @since 0.6
 	 * 
-	 * @return		endDateTime
+	 * @return		success / failure
+	 * 
 	 */
 	public boolean setTaskNotes(StringBuffer newString) {
 		
-		return sanitizeStrBuffLen(taskNotes, newString, MAX_NOTES_LEN);
+		return setStrBuff(taskNotes, newString, MAX_NOTES_LEN);
 		
 	} // setTaskNotes()
 	
-	// ***************************************** toString() ******************************************
+	// ********************************* Conversions *****************************************
 	
 	/**
 	 * Function toString(Field Constant Flags) to output desired member fields formatted.
 	 * The order of the field flags determines their output order.
+	 * 
 	 * @since 0.6
 	 * 
 	 * @param Field Constant Flags		Public flags to indicate which member fields to output
 	 * 
 	 * @return	String describing selected member fields
-	 * 
 	 * 
 	 * @see GeneralTaskInterface and TaskInterface for available field flags to choose from
 	 * 
@@ -736,9 +775,11 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	
 	/**
 	 * toString() will format and output all Task member fields
+	 * 
 	 * @since 0.6
 	 * 
 	 * @return String describing all member fields
+	 * 
 	 */
 	@Override
 	public String toString() {
@@ -752,35 +793,57 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 /**
  * 
  * @author W. Mooncai
+ * 
+ * Constants for Grade Class
+ * 
+ * @since 0.6
+ * 
+ * @param MAX_GRADE		Maximum valid grade
+ * @param MIN_GRADE		Minimum valid grade
+ *
+ */
+interface GradeInterface {
+
+	public static final double MAX_GRADE = 4.5;
+	public static final double MIN_GRADE = 0.0;
+	
+} // GradeInterface
+
+/**
+ * 
+ * @author W. Mooncai
  * @since 0.6
  * 
  * Grade class is for use with the HomeworkTask class.  It includes validity checking and conversion functions.
  *
- * @param grade		Grade awarded to its task
+ * @param gradeVal		Grade awarded to its task
+ * 
  */
-class Grade {
-	private double grade = 0.0;
+class Grade implements GradeInterface {
 	
-	public static final double MAX_GRADE = 4.5;
-	public static final double MIN_GRADE = 0.0;
+	private double gradeVal = 0.0;
 	
 	/**
-	 * Base constructor initializes grade to 0.0
+	 * Base constructor with no arguments, initializes grade to 0.0
+	 * 
+	 * @since 0.6
 	 * 
 	 */
 	Grade() {
-		grade = 0.0;
+		gradeVal = 0.0;
 	} // Grade()
 	
 	/**
-	 * Constructor receiving the grade to initialize with
+	 * Constructor with grade initialization value
+	 * 
+	 * @since 0.6
 	 * 
 	 * @param gradeIn	initial grade
 	 * 
 	 */
 	Grade(double gradeIn) {
 		if ( isValid(gradeIn) ) {
-			grade = gradeIn;
+			gradeVal = gradeIn;
 		} else {
 			// TODO throw an exception for or otherwise handle an invalid grade
 		}
@@ -789,6 +852,8 @@ class Grade {
 	
 	/**
 	 * Confirm if a grade is valid or not
+	 * 
+	 * @since 0.6
 	 * 
 	 * @param gradeCandidate	Grade to verify validity
 	 * 
@@ -805,45 +870,77 @@ class Grade {
 		
 	} // isValid()
 	
+	// **************************************** GETTERS ************************************************
+	
 	/**
-	 * Returns the double value of this Grade object
+	 * Return grade as a double
+	 * 
+	 * @since 0.6
+	 * 
+	 * @return		grade
+	 * 
+	 */
+	public double getGrade() {
+		
+		return gradeVal;
+		
+	} // getGrade()
+	
+	// **************************************** SETTERS ************************************************
+	
+	/**
+	 * Set grade with double as input
+	 * 
+	 * @since 0.6
+	 * 
+	 * @return		success / failure
+	 * 
+	 */
+	public boolean setGrade(double newGrade) {
+		
+		if ( isValid(newGrade) ) {
+			gradeVal = newGrade;
+			return true;
+		} else return false;
+		
+	} // setTaskNotes()
+	
+	// ********************************* Conversions *****************************************
+	
+	/**
+	 * Returns the double value of gradeVal
+	 * 
+	 * @since 0.6
 	 * 
 	 * @return	grade as a double value
 	 * 
 	 */
 	public double doubleValue() {
-		return new Double(grade).doubleValue();
+		
+		return gradeVal;
+
 	} // doubleValue()
 	
 	/**
-	 * Returns letter grade as a String
-	 * - A String was used for future feature upgrade to add + and - grades
+	 * Returns letter representation of grade as a String
 	 * 
-	 * @return a String containing the grade in letter format
+	 * @since 0.6
 	 * 
-	 */
-	public String toLetter() {
-		
-		if (grade >= 4.0) {
-			return "A"; 
-		} else if (grade >= 3.0) {
-			return "B";
-		} else if (grade >= 2.0) {
-			return "C";
-		} else if (grade >= 1.0) {
-			return "D";
-		} else return "F";
-		
-	} // toString()
-	
-	/**
-	 * Returns numerical grade as a String
-	 * 
-	 * @return		a String containing the double integer grade
+	 * @return		a String containing the letter representation of gradeVal
 	 * 
 	 */
 	public String toString() {
-		return new Double(grade).toString();
+		
+		if (gradeVal >= 4.0) {
+			return "A"; 
+		} else if (gradeVal >= 3.0) {
+			return "B";
+		} else if (gradeVal >= 2.0) {
+			return "C";
+		} else if (gradeVal >= 1.0) {
+			return "D";
+		} else return "F";
+		
 	} // toString()
 	
 } // CLASS Grade
@@ -858,9 +955,9 @@ class Grade {
 * @author W. Mooncai
 * @since 0.6
 * 
-* Homework Task Class Interface
+* Homework Task Class Interface constants
 * 
-* @param MAX_NOTES_LEN			Maximum length of the Task notes
+* @param MAX_HW_NOTES_LEN			Maximum length of the Task notes
 * 
 * @param MAX_COURSENAME_LEN		Maximum length of the course name field
 * @param MAX_GRADE_LEN			Maximum length of the grade field
@@ -871,9 +968,9 @@ class Grade {
 interface HomeworkTaskInterface {
 	
 	// Constants
-	public static final int MAX_NOTES_LEN = 500;
+	public static final int MAX_HW_NOTES_LEN = 500;
 	
-	public static final int MAX_COURSENAME_LEN = 20;
+	public static final int MAX_COURSENAME_LEN = 40;
 	public static final int MAX_GRADE_LEN = 2;
 	
 	public static final int DUEDATE_TO_STR = 60;
@@ -886,77 +983,114 @@ interface HomeworkTaskInterface {
 /**
 * 
 * @author W. Mooncai
-* @since 0.6
 * 
 * HomeworkTask Class
 * 
+* @since 0.6
+* 
 * @param dueDate		Due date of this task
 * @param courseName		Name of this task
-* @param grade			Numerical grade awarded to this task
+* @param gradeVal			Numerical grade awarded to this task
 * @param points			Points awarded to this task
 * 
 */
 class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	
 	private long dueDate = System.currentTimeMillis();
-	private String courseName = "Building Mobile Apps";
+	private StringBuffer courseName = new StringBuffer("Building Mobile Apps");
 	private Grade grade = new Grade(0.0);
 	private double points = 0.0;
 	
 	// ************************************ Constructor - no args ************************************
 	/**
-	 * Basic HomeworkTask constructor with no arguments
+	 * Base HomeworkTask constructor with no arguments
+	 * 
+	 * @since 0.6
 	 * 
 	 */
 	public HomeworkTask() {
 		
 		super();
 
-		taskName.replace(0, taskName.length(), "New Homework Task");
-		taskNotes.replace(0, taskNotes.length(), "New Homework Task Notes");
+		setStrBuff(taskName, "New Homework Task", MAX_NAME_LEN);
+		setStrBuff(taskNotes, taskName + " Notes", MAX_HW_NOTES_LEN);
 		
 	} // GeneralTask()
 	
 	// *********************** Constructor - with task name and start time args **********************
 	/**
 	 * HomeworkTask Constructor with arguments
+	 * 
 	 * @since 0.6
 	 * 
-	 * @param taskN			Task name
-	 * @param sDateTime		Set the start date / time.  End date / time is set 1ms prior to start date / time.
+	 * @param tName			Task name
+	 * @param startDT		Set the start date / time.  End date / time is set 1ms prior to start date / time.
 	 * 
 	 */
-	public HomeworkTask(StringBuffer taskN, long sDateTime) {
+	public HomeworkTask(String tName, long startDT) {
 		
-		super(taskN, sDateTime);
+		super(tName, startDT);
 		
-		taskNotes.replace(0, taskNotes.length(), "New Homework Task Notes");
+		setStrBuff(taskNotes, "New Homework Task Notes", MAX_HW_NOTES_LEN);
 		
 	} // GeneralTask() - 2 args
 		
-	// ********************************* Constructor - with all args *********************************
+	// ********************************* Constructor - with all super args *********************************
 	/**
-	 * Constructor accepting arguments for all member fields
+	 * HomeworkTask Constructor accepting arguments for all super member fields
+	 * 
 	 * @since 0.6
 	 * 
 	 * @param startDT		Start date / time
 	 * @param endDT			End date / time
-	 * @param taskN			Task name
+	 * @param tNotes		Task name
+	 * 
 	 */
 	
-	public HomeworkTask(long startDT, long endDT, StringBuffer tNotes) {
+	public HomeworkTask(String tName, long startDT, long endDT, String tNotes) {
 		
-		super(startDT, endDT, tNotes);
+		super(tName, startDT, endDT, tNotes);
+		
+	} // GeneralTask() - all super args
+	
+	// ********************************* Constructor - with all  args *********************************
+	/**
+	 * HomeworkTask Constructor accepting arguments for all member fields
+	 * 
+	 * @since 0.6
+	 * 
+	 * @param startDT		Start date / time
+	 * @param endDT			End date / time
+	 * @param tNotes		Task name
+	 * 
+	 * @param dueDT			Homework due date
+	 * @param cName			Homework course name
+	 * @param hWGrade		Homework grade
+	 * @param hWPoints		Homework points
+	 * 
+	 */
+	
+	public HomeworkTask(String tName, long startDT, long endDT, String tNotes
+						, long dueDT, String cName, double hWGrade, double hWPoints) {
+		
+		super(tName, startDT, endDT, tNotes);
+		
+		setDueDate(dueDT);
+		setStrBuff(courseName, cName, MAX_COURSENAME_LEN);
+		grade.setGrade(hWGrade);
+		setPoints(hWPoints);
 		
 	} // GeneralTask() - all args
 	
 	// **************************************** GETTERS ************************************************
 	
 	/**
-	 * Return Task due date
+	 * Return HomeworkTask due date
+	 * 
 	 * @since 0.6
 	 * 
 	 * @return		Task due date
+	 * 
 	 */
 	public long getDueDate() {
 		
@@ -965,10 +1099,12 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	} // getDueDate()
 	
 	/**
-	 * Return Task grade
+	 * Return HomeworkTask grade
+	 * 
 	 * @since 0.6
 	 * 
 	 * @return		Task grade
+	 * 
 	 */
 	public Grade getGrade() {
 		
@@ -977,10 +1113,12 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	} // getGrade()
 	
 	/**
-	 * Return Task points
+	 * Return HomeworkTask points
+	 * 
 	 * @since 0.6
 	 * 
 	 * @return		Task points
+	 * 
 	 */
 	public double getPoints() {
 		
@@ -991,11 +1129,12 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	// **************************************** SETTERS ************************************************
 	
 	/**
-	 * Set task due date
+	 * Set HomeworkTask dueDate
 	 * 
 	 * @since 0.6
 	 * 
-	 * @return		Homework dueDate
+	 * @return		HomeworkTask dueDate
+	 * 
 	 */
 	public long setDueDate(long dueDT) {
 		
@@ -1004,41 +1143,48 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	} // setDueDate()
 	
 	/**
-	 * Set task grade
+	 * Set HomeworkTask grade
 	 * 
 	 * @since 0.6
 	 * 
 	 * @return		Homework dueDate
 	 */
-	public Grade setGrade(float gradeIn) {
+	public Grade setGrade(double gradeIn) {
 		
 		return this.setGrade(gradeIn);
 		
-	} // setgrade()
+	} // setGrade()
 	
 	/**
-	 * Set task points
+	 * Set HomeworkTask points
 	 * 
 	 * @since 0.6
 	 * 
 	 * @return		Homework points
+	 * 
 	 */
-	public float setPoints(float pointsIn) {
+	public boolean setPoints(double pointsIn) {
 		
-		return pointsIn;
+		if ( (pointsIn >= 0) && (pointsIn <= 100) ) {
+			
+			points = pointsIn;
+			return true;
+			
+		} else return false;
 		
-	} // setgrade()
-	// ***************************************** toString() ******************************************
+	} // setPoints()
+	
+	// ********************************* Conversions *****************************************
 	
 	/**
 	 * Function toString(Field Constant Flags) to output desired member fields formatted.
 	 * The order of the field flags determines their output order.
+	 * 
 	 * @since 0.6
 	 * 
 	 * @param Field Constant Flags		Public flags to indicate which member fields to output
 	 * 
 	 * @return	String describing selected member fields
-	 * 
 	 * 
 	 * @see GeneralTaskInterface and TaskInterface for available field flags to choose from
 	 * 
@@ -1070,9 +1216,11 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	
 	/**
 	 * toString() will format and output all Task fields
+	 * 
 	 * @since 0.6
 	 * 
 	 * @return String describing all member fields
+	 * 
 	 */
 	@Override
 	public String toString() {
