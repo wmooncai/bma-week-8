@@ -60,7 +60,8 @@ public class Assignment {
 	 *            Refactor your Task class
 	 *                + Make the base Task class abstract
 	 *                + Hide all instance variables with private modifiers if you didn't already
-	 *                	*** I used protected, otherwise, inheritance wouldn't work
+	 *                	XXX I used protected, otherwise, inheritance wouldn't work
+	 *                  * Class member fields are now privatized and are accessed via getters and setters
 	 *                + Implement the common functionality from above as methods
 	 *                + Add accessors (getters and/or setters) for any member variables you think need them
 	 *                    You don't necessarily need both
@@ -271,10 +272,10 @@ abstract class Task implements TaskInterface {
 	private static final String MY_TASK_NAME = "My Task ";
 	
 	// Member Fields
-	protected StringBuffer taskName = new StringBuffer(MAX_NAME_LEN);
-	protected long startDateTime;
-	protected long endDateTime;
-	protected boolean completed;
+	private StringBuffer taskName = new StringBuffer(MAX_NAME_LEN);
+	private long startDateTime;
+	private long endDateTime;
+	private boolean completed;
 	
 	// ************************************ Constructor - no args ************************************
 	/**
@@ -633,7 +634,7 @@ interface GeneralTaskInterface {
  */
 class GeneralTask extends Task implements GeneralTaskInterface {
 	
-	protected StringBuffer taskNotes = new StringBuffer("New General Task Notes");
+	private StringBuffer taskNotes = new StringBuffer("New General Task Notes");
 	
 	// ************************************ Constructor - no args ************************************
 	/**
@@ -646,8 +647,8 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 		
 		super();
 
-		setStrBuff(taskName, "New General Task", MAX_NAME_LEN);
-		setStrBuff(taskNotes, taskName + " Notes", MAX_NOTES_LEN);
+		setStrBuff(super.getTaskName(), "New General Task", MAX_NAME_LEN);
+		setStrBuff(taskNotes, super.getTaskName() + " Notes", MAX_NOTES_LEN);
 		
 	} // GeneralTask()
 	
@@ -665,7 +666,7 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 		
 		super(tName, startDT);
 
-		setStrBuff(taskNotes, taskName + " Notes", MAX_NOTES_LEN);
+		setStrBuff(taskNotes, super.getTaskName() + " Notes", MAX_NOTES_LEN);
 		
 	} // GeneralTask() - 2 args
 
@@ -685,7 +686,7 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 		super(tName, startDT, endDT);
 		
 		// Use a GeneralTask specific taskName
-		setStrBuff(taskName, tName, MAX_NAME_LEN);
+		setStrBuff(super.getTaskName(), tName, MAX_NAME_LEN);
 		
 	} // GeneralTask() - all GeneralTask args
 	
@@ -704,7 +705,7 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 		
 		super(tName, startDT, endDT);
 		
-		setStrBuff(taskName, tName, MAX_NAME_LEN);
+		setStrBuff(super.getTaskName(), tName, MAX_NAME_LEN);
 		setStrBuff(taskNotes, tNotes, MAX_NOTES_LEN);
 
 	} // GeneralTask() - all args
@@ -1012,8 +1013,8 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 		
 		super();
 
-		setStrBuff(taskName, "New Homework Task", MAX_NAME_LEN);
-		setStrBuff(taskNotes, taskName + " Notes", MAX_HW_NOTES_LEN);
+		setStrBuff(super.getTaskName(), "New Homework Task", MAX_NAME_LEN);
+		setStrBuff(super.getTaskNotes(), super.getTaskName() + " Notes", MAX_HW_NOTES_LEN);
 		
 	} // GeneralTask()
 	
@@ -1031,7 +1032,7 @@ class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 		
 		super(tName, startDT);
 		
-		setStrBuff(taskNotes, "New Homework Task Notes", MAX_HW_NOTES_LEN);
+		setStrBuff(super.getTaskNotes(), "New Homework Task Notes", MAX_HW_NOTES_LEN);
 		
 	} // GeneralTask() - 2 args
 		
