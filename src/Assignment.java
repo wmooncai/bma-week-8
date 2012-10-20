@@ -3,10 +3,10 @@ import java.sql.Timestamp;
 /**
  * @author W. Mooncai
  * 
- * @version 0.6
+ * @version 0.7
  * 
- * Crossfire BMA Week 6 Homework
- * Due: 10/15/2012
+ * Crossfire BMA Week 7 Homework
+ * Due: 10/22/2012
  *
  */
 
