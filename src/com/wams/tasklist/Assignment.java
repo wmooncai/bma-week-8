@@ -1,6 +1,7 @@
 package com.wams.tasklist;
 
 import com.wams.tasklist.TaskFilter.TaskFilter;
+import com.wams.tasklist.TaskFilter.TaskComparatorInterface;
 
 /**
  * @author W. Mooncai
@@ -14,7 +15,7 @@ import com.wams.tasklist.TaskFilter.TaskFilter;
  *
  */
 
-public class Assignment {
+public class Assignment implements TaskComparatorInterface {
 
 	public static void main(String[] args) {
 		
@@ -34,6 +35,10 @@ public class Assignment {
 			week5Main();
 			break;
 
+		default:
+			System.out.println("Specify a main to run in Assignment.java!");
+			break;
+			
 		} // switch (week)
 		
 	} // main()
@@ -72,16 +77,47 @@ public class Assignment {
 	 */
 	
 	private static void week7Main() {
+
+		TaskFilter taskFilter;
+		
 		Task taskArray[] = {
 				new GeneralTask("General Task 2", System.currentTimeMillis()),
-				new HomeworkTask("Homework Task 2", System.currentTimeMillis()),
-				new GeneralTask("General Task 1", System.currentTimeMillis()),
-				new HomeworkTask("Homework Task 1", System.currentTimeMillis())
+				new HomeworkTask("Homework Task 2", System.currentTimeMillis() + 300),
+				new GeneralTask("General Task 1", System.currentTimeMillis() + 200),
+				new HomeworkTask("Homework Task 1", System.currentTimeMillis() + 100)
 		};
-				
-		TaskFilter taskFilter = new TaskFilter(taskArray);
 		
-		System.out.println(taskFilter.toString());
+		taskArray[1].setCompleted(true);
+		taskArray[0].setCompleted(true);
+		
+		// Switch for testing and debugging various filtering scenarios
+		switch (99) {
+		case 40:
+			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_START_DT, SORT_DESC);
+			break;
+		case 50:
+			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_START_DT, SORT_ASC);
+			break;
+		case 60:
+			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_END_DT, SORT_DESC);
+			break;
+		case 70:
+			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_END_DT, SORT_ASC);
+			break;
+		case 80:	
+			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_COMPLETED, SORT_ASC);
+			break;
+		case 90:	
+			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_COMPLETED, SORT_DESC);
+			break;
+		case 99:
+		default:
+			// Filter Tasks by Task Name (default)
+			taskFilter = new TaskFilter(taskArray);
+		}
+		
+		taskFilter.filter();
+		System.out.println( taskFilter.toString() );
 		
 	}
 	

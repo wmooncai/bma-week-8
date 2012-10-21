@@ -2,8 +2,6 @@ package com.wams.tasklist;
 
 import java.sql.Timestamp;
 
-import com.wams.tasklist.TaskFilter.*;
-
 /**
  * @author Wallace Mooncai
  * 
