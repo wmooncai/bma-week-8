@@ -2,6 +2,8 @@ package com.wams.tasklist;
 
 import java.sql.Timestamp;
 
+import com.wams.tasklist.TaskFilter.*;
+
 /**
  * @author Wallace Mooncai
  * 
@@ -19,10 +21,11 @@ import java.sql.Timestamp;
  * 
  */
 
-abstract class Task implements TaskInterface {
+public abstract class Task implements TaskInterface, Comparable<Task> {
 
 	private static final String MY_TASK_NAME = "My Task ";
 	
+	private String taskID;
 	private StringBuffer taskName = new StringBuffer(MAX_NAME_LEN);
 	private long startDateTime;
 	private long endDateTime;
@@ -42,11 +45,11 @@ abstract class Task implements TaskInterface {
 	 * 
 	 */
 	public Task() {
-		
-		setStrBuff(taskName, MY_TASK_NAME, MAX_NAME_LEN);
-		
+
 		startDateTime = System.currentTimeMillis();
 		endDateTime = startDateTime - 1;
+		
+		setTaskNameAndID(MY_TASK_NAME);
 				
 	}
 	
@@ -62,10 +65,11 @@ abstract class Task implements TaskInterface {
 	 */
 	public Task(String tName, long startDT) {
 		
+		
 		startDateTime = startDT;
 		endDateTime = startDT - 1;
 		
-		setStrBuff(taskName, tName, MAX_NAME_LEN);
+		setTaskNameAndID(tName);
 		
 	}
 		
@@ -86,9 +90,79 @@ abstract class Task implements TaskInterface {
 		startDateTime = startDT;
 		endDateTime = startDateTime - 1;
 		
-		setStrBuff(taskName, tName, MAX_NAME_LEN);
+		setTaskNameAndID(tName);
 		
 	}
+	
+	/**
+	 * Helper to set instance taskName and taskID and is guaranteed to set both fields at least with default values
+	 * 
+	 * @since 0.7
+	 * 
+	 * @param tNameIn		Value to set taskName with
+	 * 
+	 */
+	private void setTaskNameAndID(String tNameIn) {
+		
+		if (setStrBuff(taskName, tNameIn, MAX_NAME_LEN)) {
+			taskID = taskName.toString();
+		} else {
+			taskID = new String(this.getClass().toString()).substring(6)
+				+ "@" + this.hashCode();
+			setStrBuff(taskName, taskID, MAX_NAME_LEN);
+		}
+		
+	}
+	
+	// ******************************* COMPARABLE IMPLEMENTATION ***************************************
+
+	/**
+	 * @author W. Mooncai
+	 * 
+	 * Implementation for Comparable Interface
+	 * 
+	 * @since 0.7
+	 * 
+	 */
+	public boolean equals(Object obj) {
+		
+		if (!(obj instanceof Task))
+            return false;
+        Task task = (Task) obj;
+        return task.taskID.equals(taskID);
+        
+	}
+	
+	/**
+	 * @author W. Mooncai
+	 * 
+	 * Implementation for Comparable Interface
+	 * 
+	 * @since 0.7
+	 * 
+	 */
+	public int hashCode() {
+		
+		return TASK_HASH_SALT * taskID.hashCode();
+		
+	}
+	
+	/**
+	 * @author W. Mooncai
+	 * 
+	 * Implementation for Comparable Interface
+	 * 
+	 * @since 0.7
+	 * 
+	 */
+	public int compareTo(Task task) {
+		
+		int priorCompare = taskID.compareTo(task.taskID);
+		return (priorCompare != 0 ? priorCompare : taskID.compareTo(task.taskID));
+		
+	}
+	
+	// toString() is implemented at the end of this class
 	
 	// **************************************** GETTERS ************************************************
 	
@@ -196,7 +270,7 @@ abstract class Task implements TaskInterface {
 		} else {
 			endDateTime = endDT;
 			return true;
-		} // if
+		}
 		
 	}
 
@@ -224,12 +298,16 @@ abstract class Task implements TaskInterface {
 	 * 
 	 * @since 0.6
 	 * 
+	 * - Version 0.7 added sanitization for null as new value
+	 * 
 	 * @return		taskName
 	 * 
 	 */
 	public boolean setTaskName(String tName) {
 		
-		return setTaskName(new StringBuffer(tName));
+		if (tName == null) {
+			return false;
+		} else return setTaskName(new StringBuffer(tName));
 		
 	}
 
@@ -238,12 +316,16 @@ abstract class Task implements TaskInterface {
 	 * 
 	 * @since 0.6
 	 * 
+	 * - Version 0.7 added sanitization for null as new value
+	 * 
 	 * @return		taskName
 	 * 
 	 */
 	public boolean setTaskName(StringBuffer tName) {
 		
-		return setStrBuff(taskName, tName, MAX_NAME_LEN);
+		if (tName == null) {
+			return false;
+		} else return setStrBuff(taskName, tName, MAX_NAME_LEN);
 		
 	}
 
@@ -271,9 +353,9 @@ abstract class Task implements TaskInterface {
 					// Input notes newString is too long, so truncate and assign it
 					memberString.replace(0, (maxLen - 1), newString.substring(0, maxLen));
 					return true;
-				}					// if maxLen
-			} else return false;	// if length > 0
-		} else return false;		// if null
+				}
+			} else return false;
+		} else return false;
 		
 	}
 
@@ -281,6 +363,8 @@ abstract class Task implements TaskInterface {
 	 * Wrapper for setStrBuff(..., String, ...) to take an input StringBuffer instead of String
 	 * 
 	 * @since 0.6
+	 * 
+	 * - Version 0.7 added sanitization for null as new value
 	 * 
 	 * @param memberStringSB	String receiving String input newStringS
 	 * @param newStringSB		Input StringBuffer to be assigned to memberStringSB
@@ -291,7 +375,9 @@ abstract class Task implements TaskInterface {
 	 */
 	protected boolean setStrBuff(StringBuffer memberStringSB, StringBuffer newStringSB, int maxLength) {
 		
-		return setStrBuff(memberStringSB, newStringSB.toString(), maxLength);
+		if (newStringSB == null) {
+			return false;
+		} else return setStrBuff(memberStringSB, newStringSB.toString(), maxLength);
 		
 	}
 

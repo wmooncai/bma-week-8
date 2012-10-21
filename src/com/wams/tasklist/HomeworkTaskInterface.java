@@ -18,6 +18,7 @@ package com.wams.tasklist;
 */
 public interface HomeworkTaskInterface {
 	
+	public static final String HW_NOTES_DEFAULT = "Homework Task Notes";
 	public static final int MAX_HW_NOTES_LEN = 500;
 	
 	public static final int MAX_COURSENAME_LEN = 40;

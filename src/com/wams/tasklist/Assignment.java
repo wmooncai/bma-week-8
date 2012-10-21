@@ -1,5 +1,7 @@
 package com.wams.tasklist;
 
+import com.wams.tasklist.TaskFilter.TaskFilter;
+
 /**
  * @author W. Mooncai
  * 
@@ -16,7 +18,7 @@ public class Assignment {
 
 	public static void main(String[] args) {
 		
-		int week = 6;
+		int week = 7;
 		
 		switch (week) {
 		
@@ -52,14 +54,14 @@ public class Assignment {
      *           +  The application prefix should be present.  Tasklist, todolist, todo, whatever...
      *       + Its time we move to one class per file, so make each file live in its own class (anonymous and inner classes are obviously exceptions)
 	 *   + Implement a package called TaskFilter off of the application root package that will filter tasks 
-     *       Implement the TaskFilter interface.  The most simple interface I can think of would be "public Task[] filter(Task[] tasks);"
-     *       Implement at least one class that implements TaskFilter
+     *       + Implement the TaskFilter interface.  The most simple interface I can think of would be "public Task[] filter(Task[] tasks);"
+     *       + Implement at least one class that implements TaskFilter
      *           hint: you can bring in as much or as little data and behavior as long as you implement the public interface
      *           hint: remember this involves by reference semantics.  You don't want to destroy the original collection of tasks
      *   In Assignment.java
-     *       Create a collection of Task objects representative of your hierarchy
-     *       Create a collection of TaskFilter objects
-     *           Include at least one concrete class from 3.2 above
+     *       + Create a collection of Task objects representative of your hierarchy
+     *       + Create a collection of TaskFilter objects
+     *           + Include at least one concrete class from 3.2 above
      *           Include at least one anonymous class that is defined on the spot
      *       Filter the collection of Task objects and print the resulting collection of Task objects
      *       
@@ -70,8 +72,16 @@ public class Assignment {
 	 */
 	
 	private static void week7Main() {
-
+		Task taskArray[] = {
+				new GeneralTask("General Task 2", System.currentTimeMillis()),
+				new HomeworkTask("Homework Task 2", System.currentTimeMillis()),
+				new GeneralTask("General Task 1", System.currentTimeMillis()),
+				new HomeworkTask("Homework Task 1", System.currentTimeMillis())
+		};
+				
+		TaskFilter taskFilter = new TaskFilter(taskArray);
 		
+		System.out.println(taskFilter.toString());
 		
 	}
 	

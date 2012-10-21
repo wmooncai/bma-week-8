@@ -34,8 +34,8 @@ public class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 		
 		super();
 
-		setStrBuff(super.getTaskName(), "New Homework Task", MAX_NAME_LEN);
-		setStrBuff(super.getTaskNotes(), super.getTaskName() + " Notes", MAX_HW_NOTES_LEN);
+		setStrBuff(super.getTaskName(), "Homework Task", MAX_NAME_LEN);
+		setStrBuff(super.getTaskNotes(), HW_NOTES_DEFAULT, MAX_HW_NOTES_LEN);
 		
 	}
 	
@@ -52,7 +52,7 @@ public class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 		
 		super(tName, startDT);
 		
-		setStrBuff(super.getTaskNotes(), "New Homework Task Notes", MAX_HW_NOTES_LEN);
+		setStrBuff(super.getTaskNotes(), HW_NOTES_DEFAULT, MAX_HW_NOTES_LEN);
 		
 	}
 	
@@ -70,6 +70,8 @@ public class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 	public HomeworkTask(String tName, long startDT, long endDT, String tNotes) {
 		
 		super(tName, startDT, endDT, tNotes);
+
+		setStrBuff(super.getTaskNotes(), HW_NOTES_DEFAULT, MAX_HW_NOTES_LEN);
 		
 	}
 
@@ -94,6 +96,7 @@ public class HomeworkTask extends GeneralTask implements HomeworkTaskInterface {
 		
 		super(tName, startDT, endDT, tNotes);
 		
+		setStrBuff(super.getTaskNotes(), HW_NOTES_DEFAULT, MAX_HW_NOTES_LEN);
 		setDueDate(dueDT);
 		setStrBuff(courseName, cName, MAX_COURSENAME_LEN);
 		grade.setGrade(hWGrade);
