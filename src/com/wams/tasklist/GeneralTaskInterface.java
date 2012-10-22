@@ -12,7 +12,7 @@ package com.wams.tasklist;
  * @param NAME_TO_STR			Flag for toString() to output the Task Notes
  * 
  */
-interface GeneralTaskInterface {
+public interface GeneralTaskInterface {
 	
 	public static final int MAX_NOTES_LEN = 100;
 	

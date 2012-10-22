@@ -75,6 +75,7 @@ class GeneralTask extends Task implements GeneralTaskInterface {
 	 * 
 	 * @since 0.6
 	 * 
+	 * @param tName			Task name
 	 * @param startDT		Start date / time
 	 * @param endDT			End date / time
 	 * @param tName			Task name

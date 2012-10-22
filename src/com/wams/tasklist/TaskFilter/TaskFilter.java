@@ -8,7 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.wams.tasklist.Task;
-
+import com.wams.tasklist.HomeworkTaskInterface;
+import com.wams.tasklist.GeneralTaskInterface;
 /**
  * @author W. Mooncai
  * @since 0.7
@@ -17,11 +18,11 @@ import com.wams.tasklist.Task;
  * 
  */
 
-public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface {
+public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface, GeneralTaskInterface, HomeworkTaskInterface {
 	
-	Task workingArray[];
+	Task taskArray[];
 	
-	int filterField = FILTER_FIELD_TASK_NAME;
+	int filterField = FILTER_FIELD_DEFAULT;
 	boolean sortOrder = SORT_DESC;
 	
 	/**
@@ -34,10 +35,10 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface 
 	 */
 	public TaskFilter(Task[] taskArray) {
 		
-		workingArray = filter(taskArray.clone());
+		setArray(taskArray.clone());
 		
-		filterField = FILTER_FIELD_TASK_NAME;
-		sortOrder = SORT_DESC;
+		setFilterField(FILTER_FIELD_DEFAULT);
+		setSortOrder(SORT_DEFAULT);
 	}
 	
 	/**
@@ -54,14 +55,16 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface 
 	 */
 	public TaskFilter(Task[] taskArray, int filterField, boolean sortOrder) {
 		
-		workingArray = taskArray.clone();
+		setArray(taskArray);
 		
-		this.filterField = filterField;
-		this.sortOrder = sortOrder;
+		setFilterField(filterField);
+		setSortOrder(sortOrder);
+		
+		taskArray = filter();
 		
 	}
 	
-	// ************************************** OPERATIONS **********************************************
+	// ************************** OPERATIONS **********************************
 	
 	/**
 	 * Sorts the input Task array
@@ -103,7 +106,7 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface 
 	 * 
 	 */
 	public Task[] filter() {
-		return filter(workingArray);
+		return filter(taskArray);
 	}
 	
 	// **************************************** GETTERS ************************************************
@@ -135,7 +138,7 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface 
 	 * @return		Task array
 	 * 
 	 */
-	public Task[] getArray() { return workingArray; }
+	public Task[] getArray() { return taskArray; }
 	
 	// **************************************** SETTERS ************************************************
 
@@ -187,15 +190,17 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface 
 	 * 
 	 * @since 0.7
 	 * 
-	 * @param workingArray		Input Task array.
-	 * @return					Success / failure.
+	 * @param arrayIn		Input Task array.
+	 * @return				Success / failure.
 	 */
-	public boolean setArray(Task[] workingArray) {
+	public boolean setArray(Task[] arrayIn) {
 		
-		if (workingArray == null) {
-			return SUCCESS;
-		} else if (workingArray instanceof Task[]) {
-			this.workingArray = workingArray;
+		Task[] arrayOut = new Task[arrayIn.length];
+		
+		if (arrayIn instanceof Task[]) {
+			// this.taskArray = arrayIn.clone();
+			System.arraycopy(arrayIn, 0, arrayOut, 0, arrayIn.length);
+			taskArray = arrayOut;
 			return SUCCESS;
 		} else return FAILURE;
 		
@@ -214,13 +219,15 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface 
 	public String toString() {
 		
 		StringBuffer output = new StringBuffer("\nSort by flag: "
-				+ ( (filterField == FILTER_FIELD_TASK_NAME) ? "TASK_NAME" :
-					(filterField == FILTER_FIELD_END_DT) ? "END_DT" :
-						(filterField == FILTER_FIELD_COMPLETED) ? "COMPLETED" : "ERROR - UNKNOWN" )
+				+ ( (filterField == FILTER_FIELD_TASK_NAME) ? "FILTER_FIELD_TASK_NAME" 
+						: (filterField == FILTER_FIELD_START_DT) ? "FILTER_FIELD_START_DT" 
+								: (filterField == FILTER_FIELD_END_DT) ? "FILTER_FIELD_END_DT" 
+										: (filterField == FILTER_FIELD_COMPLETED)
+										? "FILTER_FIELD_COMPLETED" : "ERROR - UNKNOWN" )
 				+ "\n    Order by: "
 				+ ( (sortOrder == SORT_ASC) ? "ASC" : "DESC" ) + "\n");
 		
-		for(Task t : workingArray) {
+		for(Task t : taskArray) {
 			output.append(t.toString() + "\n\n--------------------\n");
 		}
 		

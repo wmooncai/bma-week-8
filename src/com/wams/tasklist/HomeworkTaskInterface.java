@@ -29,4 +29,6 @@ public interface HomeworkTaskInterface {
 	public static final int GRADE_TO_STR = 80;
 	public static final int POINTS_TO_STR = 90;
 	
+	public static final boolean COMPLETED = true;
+	
 }

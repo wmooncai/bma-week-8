@@ -1,5 +1,7 @@
 package com.wams.tasklist;
 
+import java.util.Arrays;
+
 import com.wams.tasklist.TaskFilter.TaskFilter;
 import com.wams.tasklist.TaskFilter.TaskComparatorInterface;
 
@@ -60,15 +62,15 @@ public class Assignment implements TaskComparatorInterface {
      *       + Its time we move to one class per file, so make each file live in its own class (anonymous and inner classes are obviously exceptions)
 	 *   + Implement a package called TaskFilter off of the application root package that will filter tasks 
      *       + Implement the TaskFilter interface.  The most simple interface I can think of would be "public Task[] filter(Task[] tasks);"
-     *       + Implement at least one class that implements TaskFilter
+     *       + 3.2) Implement at least one class that implements TaskFilter
      *           hint: you can bring in as much or as little data and behavior as long as you implement the public interface
      *           hint: remember this involves by reference semantics.  You don't want to destroy the original collection of tasks
      *   In Assignment.java
      *       + Create a collection of Task objects representative of your hierarchy
      *       + Create a collection of TaskFilter objects
      *           + Include at least one concrete class from 3.2 above
-     *           Include at least one anonymous class that is defined on the spot
-     *       Filter the collection of Task objects and print the resulting collection of Task objects
+     *           + Include at least one anonymous class that is defined on the spot
+     *       + Filter the collection of Task objects and print the resulting collection of Task objects
      *       
      *   Git:
      *   Starting with this HW, I duplicated the previous week's HW repo to retain prior commits.
@@ -77,48 +79,47 @@ public class Assignment implements TaskComparatorInterface {
 	 */
 	
 	private static void week7Main() {
-
-		TaskFilter taskFilter;
 		
-		Task taskArray[] = {
-				new GeneralTask("General Task 2", System.currentTimeMillis()),
-				new HomeworkTask("Homework Task 2", System.currentTimeMillis() + 300),
-				new GeneralTask("General Task 1", System.currentTimeMillis() + 200),
-				new HomeworkTask("Homework Task 1", System.currentTimeMillis() + 100)
+		long now = System.currentTimeMillis();
+		
+		Task tasks[] = {
+				new GeneralTask("General Task 2", now, (now - 1)),
+				new HomeworkTask("Homework Task 2", (now + 300)
+						, (now + 299), "Homework Task 2 Notes - Big Bird says 123!"
+						, (now + 299), "Building Mobile Apps", 4.5, 100),
+				new GeneralTask("General Task 1", (now + 200)
+						, (now + 199), "General Task 1 Notes - la la lala la la"),
+				new HomeworkTask("Homework Task 1", (now + 100), (now + 99)
+						, "Homework Task 1 Notes - Elmo says ABC!")
+		};
+
+		tasks[0].setCompleted(true);
+		tasks[1].setCompleted(true);
+		
+		TaskFilter[] taskFilters = {
+			new TaskFilter(tasks, FILTER_FIELD_TASK_NAME, SORT_ASC) {
+				@Override
+				public String toString() {
+					// Return ONLY the Task array (not the other TaskFilter member fields);
+					StringBuffer output = new StringBuffer();
+					for(Task t : this.getArray()) {
+						output.append(t.toString() + "\n\n--------------------\n");
+					}
+					return output.toString();
+				}
+			}
+			, new TaskFilter(tasks, FILTER_FIELD_START_DT, SORT_DESC)
+			, new TaskFilter(tasks, FILTER_FIELD_START_DT, SORT_ASC)
+			, new TaskFilter(tasks, FILTER_FIELD_END_DT, SORT_DESC)
+			, new TaskFilter(tasks, FILTER_FIELD_END_DT, SORT_ASC)
+			, new TaskFilter(tasks, FILTER_FIELD_COMPLETED, SORT_ASC)
+			, new TaskFilter(tasks, FILTER_FIELD_COMPLETED, SORT_DESC)
 		};
 		
-		taskArray[1].setCompleted(true);
-		taskArray[0].setCompleted(true);
-		
-		// Switch for testing and debugging various filtering scenarios
-		switch (99) {
-		case 40:
-			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_START_DT, SORT_DESC);
-			break;
-		case 50:
-			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_START_DT, SORT_ASC);
-			break;
-		case 60:
-			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_END_DT, SORT_DESC);
-			break;
-		case 70:
-			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_END_DT, SORT_ASC);
-			break;
-		case 80:	
-			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_COMPLETED, SORT_ASC);
-			break;
-		case 90:	
-			taskFilter = new TaskFilter(taskArray, FILTER_FIELD_COMPLETED, SORT_DESC);
-			break;
-		case 99:
-		default:
-			// Filter Tasks by Task Name (default)
-			taskFilter = new TaskFilter(taskArray);
-		}
-		
-		taskFilter.filter();
-		System.out.println( taskFilter.toString() );
-		
+		// TaskFilter sorts by default when Full Featured constructor is used and specifies sort parameters
+		System.out.println( "TaskFilter[] Output\n(Anonymous output is seen in first Array element (sort by Task name)\n without TaskFilter member fields: filterField and sortOrder):\n"
+			+ "\n" + Arrays.deepToString(taskFilters));
+
 	}
 	
 	
