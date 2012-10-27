@@ -22,7 +22,8 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	
 	Task taskArray[];
 	
-	int filterField = FILTER_FIELD_DEFAULT;
+	int sortField = FIELD_DEFAULT;
+	int filterField = FIELD_DEFAULT;
 	boolean sortOrder = SORT_DESC;
 	
 	/**
@@ -37,30 +38,41 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 		
 		setArray(taskArray.clone());
 		
-		setFilterField(FILTER_FIELD_DEFAULT);
+		setSortField(FIELD_DEFAULT);
 		setSortOrder(SORT_DEFAULT);
 	}
 	
 	/**
-	 * Full featured constructor
+	 * Sort constructor
 	 * 
 	 * @since 0.7
 	 * 
 	 * Set all TaskFilter member fields upon instantiation.
 	 * 
 	 * @param taskArray			Input Task array is cloned, so original array is not changed
-	 * @param filterField		Task field upon which to sort 
+	 * @param sortField			Task field on which to sort 
 	 * @param sortOrder			Direction of sort, ascending or descending
 	 * 
 	 */
-	public TaskFilter(Task[] taskArray, int filterField, boolean sortOrder) {
+	public TaskFilter(Task[] taskArray, int sortField, boolean sortOrder) {
 		
 		setArray(taskArray);
 		
-		setFilterField(filterField);
+		setSortField(sortField);
 		setSortOrder(sortOrder);
 		
-		taskArray = filter();
+		this.taskArray = sort(taskArray);
+		
+	}
+	
+	public TaskFilter(Task[] taskArray, int operation, int sortField
+			, int filterField, int filterVal) {
+		
+		setArray(taskArray);
+		
+		// setFilterField(FIELD_COMPLETED);
+		
+		// taskArray = filter(FIELD_COMPLETED);
 		
 	}
 	
@@ -79,8 +91,7 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 		
 		List<Task> taskList = Arrays.asList(sortTasks);
 		
-		// Collections.sort(taskList);
-		Collections.sort(taskList, new TaskComparator(filterField, sortOrder));
+		Collections.sort(taskList, new TaskComparator(sortField, sortOrder));
 		
 		return (Task[]) taskList.toArray();
 	}
@@ -119,7 +130,7 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 * @return		filterField
 	 * 
 	 */
-	public int getFilterField() { return filterField; }
+	public int getFilterField() { return sortField; }
 	
 	/**
 	 * Return sort order as defined in TaskComparatorInterface.
@@ -141,7 +152,23 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	public Task[] getArray() { return taskArray; }
 	
 	// **************************************** SETTERS ************************************************
-
+	
+	public boolean setFilterField(int filterField) {
+		
+		switch (filterField) {
+		
+		case FIELD_TASK_NAME:
+		case FIELD_START_DT:
+		case FIELD_END_DT:
+		case FIELD_COMPLETED:
+			this.filterField = filterField;
+			return SUCCESS;
+		default: return FAILURE;
+		
+		}
+		
+	}
+	
 	/**
 	 * Set the field by which to sort the Task array.
 	 * 
@@ -152,15 +179,15 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 * @return					Success / failure.
 	 * 
 	 */
-	public boolean setFilterField(int filterField) {
+	public boolean setSortField(int sortField) {
 		
-		switch (filterField) {
+		switch (sortField) {
 		
-		case FILTER_FIELD_TASK_NAME:
-		case FILTER_FIELD_START_DT:
-		case FILTER_FIELD_END_DT:
-		case FILTER_FIELD_COMPLETED:
-			this.filterField = filterField;
+		case FIELD_TASK_NAME:
+		case FIELD_START_DT:
+		case FIELD_END_DT:
+		case FIELD_COMPLETED:
+			this.sortField = sortField;
 			return SUCCESS;
 		default: return FAILURE;
 		
@@ -173,7 +200,7 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 * 
 	 * @since 0.7
 	 * 
-	 * @param filterField		Set with constant from TaskComparatorInterface
+	 * @param sortField		Set with constant from TaskComparatorInterface
 	 * 
 	 * @return					Success / failure.
 	 * 
@@ -219,10 +246,10 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	public String toString() {
 		
 		StringBuffer output = new StringBuffer("\nSort by flag: "
-				+ ( (filterField == FILTER_FIELD_TASK_NAME) ? "FILTER_FIELD_TASK_NAME" 
-						: (filterField == FILTER_FIELD_START_DT) ? "FILTER_FIELD_START_DT" 
-								: (filterField == FILTER_FIELD_END_DT) ? "FILTER_FIELD_END_DT" 
-										: (filterField == FILTER_FIELD_COMPLETED)
+				+ ( (sortField == FIELD_TASK_NAME) ? "FILTER_FIELD_TASK_NAME" 
+						: (sortField == FIELD_START_DT) ? "FILTER_FIELD_START_DT" 
+								: (sortField == FIELD_END_DT) ? "FILTER_FIELD_END_DT" 
+										: (sortField == FIELD_COMPLETED)
 										? "FILTER_FIELD_COMPLETED" : "ERROR - UNKNOWN" )
 				+ "\n    Order by: "
 				+ ( (sortOrder == SORT_ASC) ? "ASC" : "DESC" ) + "\n");

@@ -97,7 +97,7 @@ public class Assignment implements TaskComparatorInterface {
 		tasks[1].setCompleted(true);
 		
 		TaskFilter[] taskFilters = {
-			new TaskFilter(tasks, FILTER_FIELD_TASK_NAME, SORT_ASC) {
+			new TaskFilter(tasks, FIELD_TASK_NAME, SORT_ASC) {
 				@Override
 				public String toString() {
 					// Return ONLY the Task array (not the other TaskFilter member fields);
@@ -108,12 +108,12 @@ public class Assignment implements TaskComparatorInterface {
 					return output.toString();
 				}
 			}
-			, new TaskFilter(tasks, FILTER_FIELD_START_DT, SORT_DESC)
-			, new TaskFilter(tasks, FILTER_FIELD_START_DT, SORT_ASC)
-			, new TaskFilter(tasks, FILTER_FIELD_END_DT, SORT_DESC)
-			, new TaskFilter(tasks, FILTER_FIELD_END_DT, SORT_ASC)
-			, new TaskFilter(tasks, FILTER_FIELD_COMPLETED, SORT_ASC)
-			, new TaskFilter(tasks, FILTER_FIELD_COMPLETED, SORT_DESC)
+			, new TaskFilter(tasks, FIELD_START_DT, SORT_DESC)
+			, new TaskFilter(tasks, FIELD_START_DT, SORT_ASC)
+			, new TaskFilter(tasks, FIELD_END_DT, SORT_DESC)
+			, new TaskFilter(tasks, FIELD_END_DT, SORT_ASC)
+			, new TaskFilter(tasks, FIELD_COMPLETED, SORT_ASC)
+			, new TaskFilter(tasks, FIELD_COMPLETED, SORT_DESC)
 		};
 		
 		// TaskFilter sorts by default when Full Featured constructor is used and specifies sort parameters
