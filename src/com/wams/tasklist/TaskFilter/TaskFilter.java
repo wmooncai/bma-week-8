@@ -69,7 +69,16 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 		
 	}
 	
-	//TODO JavaDoc
+	/**
+	 * Constructor using List<Task> input.
+	 * 
+	 * @since 0.8
+	 * 
+	 * @param taskList		Input taskList
+	 * @param sortField			Task field on which to sort 
+	 * @param sortOrder			Direction of sort, ascending or descending
+	 * 
+	 */
 	public TaskFilter(List<Task> taskList, int sortField, boolean sortOrder) {
 		
 		this.taskList.addAll(taskList);
@@ -111,7 +120,15 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 		return (Task[]) taskList.toArray();
 	}
 	
-	// TODO JavaDoc
+	/**
+	 * Sort the input Task List<Task>
+	 * 
+	 * @since 0.8
+	 * 
+	 * @param sortTasks		Input Task List<Task> to sort
+	 * @return				The sorted Task List<Task>
+	 * 
+	 */
 	public List<Task> sort(List<Task> sortTasks) {
 		
 		List<Task> taskList = sortTasks;
@@ -157,7 +174,14 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 */
 	public int getFilterField() { return filterField; }
 	
-	// TODO JavaDoc
+	/**
+	 * Return the field to sort by as defined in TaskComparatorInterface.
+	 * 
+	 * @since 0.8
+	 * 
+	 * @return		sortField
+	 * 
+	 */
 	public int getSortField() { return sortField; }
 	
 	/**
@@ -179,7 +203,14 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 */
 	public Task[] getArray() { return taskArray; }
 	
-	// TODO JavaDoc
+	/**
+	 * Return Task list as a List<Task> as defined in TaskComparatorInterface.
+	 * 
+	 * @since 0.8
+	 * 
+	 * @return		taskList
+	 * 
+	 */
 	public List<Task> getList() { return taskList; }
 	
 	// **************************************** SETTERS ************************************************

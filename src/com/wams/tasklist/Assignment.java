@@ -149,9 +149,8 @@ public class Assignment implements TaskComparatorInterface {
 
 		
 		// TaskFilter sorts by default when Full Featured constructor is used and specifies sort parameters
-		System.out.println( "TaskFilter[] Output\n(Anonymous output is seen in first Array element (sort by Task name)\n without TaskFilter member fields: filterField and sortOrder):\n"
-			+ "\n" + Arrays.deepToString(taskFilters.toArray()));
-		
+			System.out.println( "TaskFilter[] Output\n(Anonymous output is seen in first Array element (sort by Task name)\n without TaskFilter member fields: filterField and sortOrder):\n"
+					+ "\n" + Arrays.deepToString(taskFilters.toArray()));
 	}
 	
 	
@@ -229,7 +228,6 @@ public class Assignment implements TaskComparatorInterface {
 		// TaskFilter sorts by default when Full Featured constructor is used and specifies sort parameters
 		System.out.println( "TaskFilter[] Output\n(Anonymous output is seen in first Array element (sort by Task name)\n without TaskFilter member fields: filterField and sortOrder):\n"
 			+ "\n" + Arrays.deepToString(taskFilters));
-
 	}
 	
 	
@@ -263,7 +261,7 @@ public class Assignment implements TaskComparatorInterface {
 	 *            Refactor your Task class
 	 *                + Make the base Task class abstract
 	 *                + Hide all instance variables with private modifiers if you didn't already
-	 *                	XXX I used protected, otherwise, inheritance wouldn't work
+	 *                	xxx I used protected, otherwise, inheritance wouldn't work
 	 *                  * Class member fields are now privatized and are accessed via getters and setters
 	 *                + Implement the common functionality from above as methods
 	 *                + Add accessors (getters and/or setters) for any member variables you think need them
