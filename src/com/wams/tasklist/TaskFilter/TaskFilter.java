@@ -22,10 +22,12 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	
 	Task taskArray[];
 	
+	List<Task> taskList;
+	
 	int sortField = FIELD_DEFAULT;
 	int filterField = FIELD_DEFAULT;
 	boolean sortOrder = SORT_DESC;
-	
+		
 	/**
 	 * Default constructor
 	 * 
@@ -65,6 +67,17 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 		
 	}
 	
+	//TODO JavaDoc
+	public TaskFilter(List<Task> taskList, int sortField, boolean sortOrder) {
+		
+		this.taskList.addAll(taskList);
+
+		setSortField(sortField);
+		setSortOrder(sortOrder);
+
+		Collections.sort(this.taskList, new TaskComparator(getSortField(), getSortOrder()));
+	}
+
 	public TaskFilter(Task[] taskArray, int operation, int sortField
 			, int filterField, int filterVal) {
 		
@@ -94,6 +107,16 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 		Collections.sort(taskList, new TaskComparator(sortField, sortOrder));
 		
 		return (Task[]) taskList.toArray();
+	}
+	
+	// TODO JavaDoc
+	public List<Task> sort(List<Task> sortTasks) {
+		
+		List<Task> taskList = sortTasks;
+		
+		Collections.sort(taskList, new TaskComparator(sortField, sortOrder));
+		
+		return taskList;
 	}
 	
 	/**
@@ -130,7 +153,10 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 * @return		filterField
 	 * 
 	 */
-	public int getFilterField() { return sortField; }
+	public int getFilterField() { return filterField; }
+	
+	// TODO JavaDoc
+	public int getSortField() { return sortField; }
 	
 	/**
 	 * Return sort order as defined in TaskComparatorInterface.

@@ -1,6 +1,8 @@
 package com.wams.tasklist;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.wams.tasklist.TaskFilter.TaskFilter;
 import com.wams.tasklist.TaskFilter.TaskComparatorInterface;
@@ -21,10 +23,14 @@ public class Assignment implements TaskComparatorInterface {
 
 	public static void main(String[] args) {
 		
-		int week = 7;
+		int week = 8;
 		
 		switch (week) {
 		
+		case 8:
+			week8Main();
+			break;
+			
 		case 7:
 			week7Main();
 			break;
@@ -44,6 +50,96 @@ public class Assignment implements TaskComparatorInterface {
 		} // switch (week)
 		
 	} // main()
+	
+	/**
+	 * 
+	 * Week 8 Homework Main()
+	 * 
+	 * @since 0.8
+	 * 
+	 * All instances of arrays being replaced by generic Lists, which is
+	 * actually more likely to result in lines of code being removed than
+	 * added.  One thing to note is that the pattern I'm suggesting is to
+	 * declare Lists and use ArrayLists.  For example, if you have a
+	 * CompositeTask that contains other tasks that is currently implemented
+	 * as array, this would be the move forward
+	 *
+	 * Old class:
+	 * CompositeTask extends Task {
+     *   	private Task[] componentTasks;
+	 *
+     *   	public CompositeTask() {
+     *			componentTasks = new Task[]{...};
+     *		}
+     * }
+     * 
+     * New class:
+     * CompositeTask extends Task {
+     * 		private List<Task> componentTasks;
+	 *
+     *		public CompositeTask() {
+     *			componentTasks = new ArrayList<Task>();
+     *			//add components here
+     *		}
+	 * }
+	 * 
+	 * The jist of this is to use the interface and not the implementation.  So if you all of a sudden realize you prize insertion performance over random access, its as simple a change as doing this
+	 *  
+	 *  old: componentTasks = new ArrayList<Task>();
+	 *  new: componentTasks = new LinkedList<Task>();
+	 *  
+	 *  and nothing else changes. 
+     *   
+	 */
+	
+	private static void week8Main() {
+		
+		long now = System.currentTimeMillis();
+		
+		List<Task> tasks = new ArrayList<Task>();
+				tasks.add( new GeneralTask("General Task 2", now, (now - 1)) );
+				
+				tasks.add( new HomeworkTask("Homework Task 2", (now + 300)
+						, (now + 299), "Homework Task 2 Notes - Big Bird says 123!"
+						, (now + 299), "Building Mobile Apps", 4.5, 100) );
+				
+				tasks.add( new GeneralTask("General Task 1", (now + 200)
+						, (now + 199), "General Task 1 Notes - la la lala la la") );
+				
+				tasks.add( new HomeworkTask("Homework Task 1", (now + 100), (now + 99)
+						, "Homework Task 1 Notes - Elmo says ABC!") );
+
+		tasks.get(0).setCompleted(true);
+		tasks.get(1).setCompleted(true);
+				
+		System.out.println(Arrays.asList(tasks).toString() + "\n\n##########################\n\n");
+		
+		
+		List<TaskFilter> taskFilters = new ArrayList<TaskFilter>();
+			taskFilters.add( new TaskFilter(tasks, FIELD_TASK_NAME, SORT_ASC) {
+				@Override
+				public String toString() {
+					// Return ONLY the Task array (not the other TaskFilter member fields);
+					StringBuffer output = new StringBuffer();
+					for(Task t : this.getArray()) {
+						output.append(t.toString() + "\n\n--------------------\n");
+					}
+					return output.toString();
+				}
+			} );
+			taskFilters.add( new TaskFilter(tasks, FIELD_START_DT, SORT_DESC) );
+			taskFilters.add( new TaskFilter(tasks, FIELD_START_DT, SORT_ASC) );
+			taskFilters.add( new TaskFilter(tasks, FIELD_END_DT, SORT_DESC) );
+			taskFilters.add( new TaskFilter(tasks, FIELD_END_DT, SORT_ASC) );
+			taskFilters.add( new TaskFilter(tasks, FIELD_COMPLETED, SORT_ASC) );
+			taskFilters.add( new TaskFilter(tasks, FIELD_COMPLETED, SORT_DESC) );
+		
+		// TaskFilter sorts by default when Full Featured constructor is used and specifies sort parameters
+		System.out.println( "TaskFilter[] Output\n(Anonymous output is seen in first Array element (sort by Task name)\n without TaskFilter member fields: filterField and sortOrder):\n"
+			+ "\n" + Arrays.deepToString(taskFilters.toArray()));
+		
+	}
+	
 	
 	/**
 	 * 
