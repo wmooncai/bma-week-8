@@ -113,7 +113,7 @@ public class Assignment implements TaskComparatorInterface {
 		tasks.get(1).setCompleted(true);
 				
 		System.out.println(Arrays.asList(tasks).toString() + "\n\n##########################\n\n");
-		
+		 
 		
 		List<TaskFilter> taskFilters = new ArrayList<TaskFilter>();
 			taskFilters.add( new TaskFilter(tasks, FIELD_TASK_NAME, SORT_ASC) {
