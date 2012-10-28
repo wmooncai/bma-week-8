@@ -1,4 +1,4 @@
-bma-week-6
+bma-week-7
 ==========
 
-Crossfire Building Mobile Apps Week 6 Homework
+Crossfire Building Mobile Apps Week 7 Homework
