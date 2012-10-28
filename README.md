@@ -1,4 +1,6 @@
-bma-week-7
+bma-week-8
 ==========
 
-Crossfire Building Mobile Apps Week 7 Homework
+Crossfire Building Mobile Apps Week 8 Homework
+
+Author: W. Mooncai
