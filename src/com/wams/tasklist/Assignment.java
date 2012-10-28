@@ -125,14 +125,14 @@ public class Assignment implements TaskComparatorInterface {
 					
 					if (this.getArray() != null) {
 						for(Task t : this.getArray()) {
-							output.append(t.toString() + "\n\n____________________________\n");
+							output.append(t.toString() + "\n____________________________\n");
 						}
 					} else {
 						Iterator<Task> iterator = this.getList().listIterator();
 						while (iterator.hasNext()) {
 							output.append(iterator.next().toString());
 							if (iterator.hasNext()) {
-								output.append("\n\n_________________________\n");
+								output.append("\n_________________________\n");
 							}
 						}
 					}
