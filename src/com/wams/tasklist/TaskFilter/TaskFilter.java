@@ -3,8 +3,10 @@
  */
 package com.wams.tasklist.TaskFilter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.wams.tasklist.Task;
@@ -20,9 +22,9 @@ import com.wams.tasklist.GeneralTaskInterface;
 
 public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface, GeneralTaskInterface, HomeworkTaskInterface {
 	
-	Task taskArray[];
+	Task taskArray[] = null;
 	
-	List<Task> taskList;
+	List<Task> taskList = new ArrayList<Task>();
 	
 	int sortField = FIELD_DEFAULT;
 	int filterField = FIELD_DEFAULT;
@@ -177,6 +179,9 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 */
 	public Task[] getArray() { return taskArray; }
 	
+	// TODO JavaDoc
+	public List<Task> getList() { return taskList; }
+	
 	// **************************************** SETTERS ************************************************
 	
 	public boolean setFilterField(int filterField) {
@@ -279,9 +284,16 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 										? "FILTER_FIELD_COMPLETED" : "ERROR - UNKNOWN" )
 				+ "\n    Order by: "
 				+ ( (sortOrder == SORT_ASC) ? "ASC" : "DESC" ) + "\n");
-		
-		for(Task t : taskArray) {
-			output.append(t.toString() + "\n\n--------------------\n");
+
+		if ( !(taskList.isEmpty()) ) {
+			Iterator<Task> iterator = taskList.listIterator();
+			while (iterator.hasNext()) {
+				output.append(iterator.next().toString() + "\n\n=====================\n");
+			}
+		} else {
+			for(Task t : taskArray) {
+				output.append(t.toString() + "\n\n--------------------\n");
+			};
 		}
 		
 		return output.toString();

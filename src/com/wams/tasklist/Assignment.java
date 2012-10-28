@@ -2,6 +2,7 @@ package com.wams.tasklist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import com.wams.tasklist.TaskFilter.TaskFilter;
@@ -112,18 +113,30 @@ public class Assignment implements TaskComparatorInterface {
 		tasks.get(0).setCompleted(true);
 		tasks.get(1).setCompleted(true);
 				
-		System.out.println(Arrays.asList(tasks).toString() + "\n\n##########################\n\n");
-		 
-		
+		// Debugging
+		// System.out.println(Arrays.asList(tasks).toString() + "\n\n##########################\n");
+	
 		List<TaskFilter> taskFilters = new ArrayList<TaskFilter>();
 			taskFilters.add( new TaskFilter(tasks, FIELD_TASK_NAME, SORT_ASC) {
 				@Override
 				public String toString() {
 					// Return ONLY the Task array (not the other TaskFilter member fields);
-					StringBuffer output = new StringBuffer();
-					for(Task t : this.getArray()) {
-						output.append(t.toString() + "\n\n--------------------\n");
+					StringBuffer output = new StringBuffer("\n\n*****************************\n\nThis is an @OVERRIDDEN TaskFilter.toString():\n");
+					
+					if (this.getArray() != null) {
+						for(Task t : this.getArray()) {
+							output.append(t.toString() + "\n\n____________________________\n");
+						}
+					} else {
+						Iterator<Task> iterator = this.getList().listIterator();
+						while (iterator.hasNext()) {
+							output.append(iterator.next().toString());
+							if (iterator.hasNext()) {
+								output.append("\n\n_________________________\n");
+							}
+						}
 					}
+					output.append("\n\n*****************************\n");
 					return output.toString();
 				}
 			} );
@@ -133,6 +146,7 @@ public class Assignment implements TaskComparatorInterface {
 			taskFilters.add( new TaskFilter(tasks, FIELD_END_DT, SORT_ASC) );
 			taskFilters.add( new TaskFilter(tasks, FIELD_COMPLETED, SORT_ASC) );
 			taskFilters.add( new TaskFilter(tasks, FIELD_COMPLETED, SORT_DESC) );
+
 		
 		// TaskFilter sorts by default when Full Featured constructor is used and specifies sort parameters
 		System.out.println( "TaskFilter[] Output\n(Anonymous output is seen in first Array element (sort by Task name)\n without TaskFilter member fields: filterField and sortOrder):\n"
