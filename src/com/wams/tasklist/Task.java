@@ -339,7 +339,8 @@ public abstract class Task implements TaskInterface, Comparable<Task> {
 	 * @return					assignment status; a bad String length returns false
 	 * 
 	 */
-	protected boolean setStrBuff(StringBuffer memberString, String newString, int maxLen) {
+	// Default access so subclasses can use this method.
+	boolean setStrBuff(StringBuffer memberString, String newString, int maxLen) {
 		
 		// Sanitize newString and assign it to memberString
 		if (newString != null) {
@@ -371,7 +372,8 @@ public abstract class Task implements TaskInterface, Comparable<Task> {
 	 * @return					Success / Failure status
 	 * 
 	 */
-	protected boolean setStrBuff(StringBuffer memberStringSB, StringBuffer newStringSB, int maxLength) {
+	// Default access so subclasses can use this method.
+	boolean setStrBuff(StringBuffer memberStringSB, StringBuffer newStringSB, int maxLength) {
 		
 		if (newStringSB == null) {
 			return false;

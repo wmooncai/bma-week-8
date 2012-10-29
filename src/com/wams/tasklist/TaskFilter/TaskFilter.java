@@ -22,13 +22,13 @@ import com.wams.tasklist.GeneralTaskInterface;
 
 public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface, GeneralTaskInterface, HomeworkTaskInterface {
 	
-	Task taskArray[] = null;
+	private Task taskArray[] = null;
 	
-	List<Task> taskList = new ArrayList<Task>();
+	private List<Task> taskList = new ArrayList<Task>();
 	
-	int sortField = FIELD_DEFAULT;
-	int filterField = FIELD_DEFAULT;
-	boolean sortOrder = SORT_DESC;
+	private int sortField = FIELD_DEFAULT;
+	private int filterField = FIELD_DEFAULT;
+	private boolean sortOrder = SORT_DESC;
 		
 	/**
 	 * Default constructor
@@ -165,7 +165,8 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	// **************************************** GETTERS ************************************************
 
 	/**
-	 * Return field by with to sort the Task array as defined in TaskComparatorInterface.
+	 * Return field by with to sort the Task array as defined
+	 *  in TaskComparatorInterface.
 	 * 
 	 * @since 0.7
 	 * 
@@ -173,6 +174,25 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 * 
 	 */
 	public int getFilterField() { return filterField; }
+	
+	/**
+	 * Return field as a string, by with to sort the Task array as defined
+	 *  in TaskComparatorInterface.
+	 *  
+	 *  @since 0.8
+	 *  
+	 * @return		filterField name
+	 */
+	public String getSortFieldName() {
+		
+		switch (filterField) {
+		case FIELD_COMPLETED:	return "FIELD_COMPLETED";
+		case FIELD_TASK_NAME:	return "FIELD_TASK_NAME";
+		case FIELD_START_DT:	return "FIELD_START_DT";
+		case FIELD_END_DT:		return "FIELD_END_DT";
+		default:			 	return "FIELD_DEFAULT";
+		}
+	}
 	
 	/**
 	 * Return the field to sort by as defined in TaskComparatorInterface.
@@ -192,6 +212,18 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 * @return		sortOrder
 	 */
 	public boolean getSortOrder() { return sortOrder; }
+	
+	/**
+	 * Return sort order as a String, as defined in TaskComparatorInterface.
+	 * 
+	 * @since 0.8
+	 * 
+	 * @return		sortOrder as a String
+	 */
+	public String getSortOrderName() {
+		
+		return (sortOrder == SORT_ASC) ? "Ascending" : "Descending";
+		}
 	
 	/**
 	 * Return Task array
@@ -307,7 +339,8 @@ public class TaskFilter implements TaskFilterInterface, TaskComparatorInterface,
 	 */
 	public String toString() {
 		
-		StringBuffer output = new StringBuffer("\nSort by flag: "
+		StringBuffer output = new StringBuffer(super.toString()
+				+ "\nSort by flag: "
 				+ ( (sortField == FIELD_TASK_NAME) ? "FILTER_FIELD_TASK_NAME" 
 						: (sortField == FIELD_START_DT) ? "FILTER_FIELD_START_DT" 
 								: (sortField == FIELD_END_DT) ? "FILTER_FIELD_END_DT" 

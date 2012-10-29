@@ -15,8 +15,8 @@ import com.wams.tasklist.Task;
  */
 public class TaskComparator implements Comparator<Object>, TaskComparatorInterface {
 
-	int filterField = FIELD_DEFAULT;
-	boolean sortOrder = SORT_DESC;
+	private int filterField = FIELD_DEFAULT;
+	private boolean sortOrder = SORT_DESC;
 	
 	/**
 	 * Default constructor, sorting by FILTER_FIELD_DEFAULT (should be Task Name), descending.
