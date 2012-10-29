@@ -22,6 +22,8 @@ import com.wams.tasklist.TaskFilter.TaskComparatorInterface;
 
 public class Assignment implements TaskComparatorInterface, DebugInterface {
 
+	private static Debug debug = new Debug(DEBUG_OFF, DEBUG_LEVEL_WARNING);
+	
 	public static void main(String[] args) {
 		
 		int week = 8;
@@ -97,77 +99,22 @@ public class Assignment implements TaskComparatorInterface, DebugInterface {
 	
 	private static void week8Main() {
 		
-		Debug debug = new Debug(DEBUG_OFF, DEBUG_LEVEL_WARNING);
-
-		final long now = System.currentTimeMillis();
-		
-		List<Task> tasks = new ArrayList<Task>();
-				tasks.add( new GeneralTask("General Task 2", now, (now - 1)) );
-				
-				tasks.add( new HomeworkTask("Homework Task 2", (now + 300)
-						, (now + 299), "Homework Task 2 Notes - Big Bird says 123!"
-						, (now + 299), "Building Mobile Apps", 4.5, 100) );
-				
-				tasks.add( new GeneralTask("General Task 1", (now + 200)
-						, (now + 199), "General Task 1 Notes - la la lala la la") );
-				
-				tasks.add( new HomeworkTask("Homework Task 1", (now + 100), (now + 99)
-						, "Homework Task 1 Notes - Elmo says ABC!") );
-
-		tasks.get(0).setCompleted(true);
-		tasks.get(1).setCompleted(true);
-
-		debug.toLog( DEBUG_LEVEL_DEBUG, "Debug: List of tasks:\n"
-				+ tasks.toString() );
+		List<Task> tasks = createTaskList();
 	
-		List<TaskFilter> taskFilters = new ArrayList<TaskFilter>();
-			taskFilters.add( new TaskFilter(tasks, FIELD_TASK_NAME, SORT_ASC) {
-				@Override
-				public String toString() {
-					/* + Return ONLY the Task List
-					 *    (not the other TaskFilter member fields)
-					 * + Change line separator character
-					*/
-					StringBuffer output = new StringBuffer("\n\n"
-							+ "*****************************\n\n"
-							+ "This is an @OVERRIDDEN TaskFilter.toString():\n");
-					
-					if (this.getArray() != null) {
-						for(Task t : this.getArray()) {
-							output.append(t.toString() + "\n____________________________\n");
-						}
-					} else {
-						Iterator<Task> taskIterator = this.getList().listIterator();
-						while (taskIterator.hasNext()) {
-							output.append(taskIterator.next().toString());
-							if (taskIterator.hasNext()) {
-								output.append("\n_________________________\n");
-							}
-						}
-					}
-					output.append("\n\n*****************************\n");
-					return output.toString();
-				}
-			} );
-			taskFilters.add( new TaskFilter(tasks, FIELD_START_DT, SORT_DESC) );
-			taskFilters.add( new TaskFilter(tasks, FIELD_START_DT, SORT_ASC) );
-			taskFilters.add( new TaskFilter(tasks, FIELD_END_DT, SORT_DESC) );
-			taskFilters.add( new TaskFilter(tasks, FIELD_END_DT, SORT_ASC) );
-			taskFilters.add( new TaskFilter(tasks, FIELD_COMPLETED, SORT_ASC) );
-			taskFilters.add( new TaskFilter(tasks, FIELD_COMPLETED, SORT_DESC) );
+		List<TaskFilter> taskFilters = createTaskFilterList(tasks);
 
-			System.out.println( "List<TaskList> Output\n(Anonymous output is "
-					+ "seen in first Array element (sort by Task name)\n"
-					+ "without TaskFilter member fields: filterField "
-					+ "and sortOrder):\n");
+		System.out.println( "List<TaskList> Output\n(Anonymous output is "
+						+ "seen in first Array element (sort by Task name)\n"
+						+ "without TaskFilter member fields: filterField "
+						+ "and sortOrder):\n");
 			
-			debug.toLog( DEBUG_LEVEL_DEBUG, "taskFilters.size(): "
-					+ taskFilters.size() );
+		debug.toLog( DEBUG_LEVEL_DEBUG, "taskFilters.size(): "
+										+ taskFilters.size() );
 			
-			// TODO - Any better way to output all of these objects?
-			dumpList(taskFilters);
+		// TODO - Any better way to output all of these objects?
+		dumpList(taskFilters);
 
-			debug.toLog(DEBUG_LEVEL_INFORMATIONAL, "DONE.");
+		debug.toLog(DEBUG_LEVEL_INFORMATIONAL, "DONE.");
 	}
 	
 	
@@ -428,7 +375,101 @@ public class Assignment implements TaskComparatorInterface, DebugInterface {
 	} // week5Main()
 	
 	// ******************************* Methods ********************************
+
+	/**
+	 * Just a helper method to create an ArrayList<Task> containing assorted 
+	 *  Tasks for better top-down readability of the Week 8 main().
+	 * 
+	 * @since 0.8
+	 * 
+	 * @return		An arrayList<Task> containing a List of Tasks.
+	 * 
+	 */
+	private static ArrayList<Task> createTaskList() {
+		
+		final long now = System.currentTimeMillis();
+		
+		ArrayList<Task> taskList = new ArrayList<Task>();
+		taskList.add( new GeneralTask("General Task 2", now, (now - 1)) );
+		
+		taskList.add( new HomeworkTask("Homework Task 2", (now + 300)
+				, (now + 299), "Homework Task 2 Notes - Big Bird says 123!"
+				, (now + 299), "Building Mobile Apps", 4.5, 100) );
+		
+		taskList.add( new GeneralTask("General Task 1", (now + 200)
+				, (now + 199), "General Task 1 Notes - la la lala la la") );
+		
+		taskList.add( new HomeworkTask("Homework Task 1", (now + 100), (now + 99)
+				, "Homework Task 1 Notes - Elmo says ABC!") );
+
+		taskList.get(0).setCompleted(true);
+		taskList.get(1).setCompleted(true);
+
+		debug.toLog( DEBUG_LEVEL_DEBUG, "Debug: List of tasks:\n"
+				+ taskList.toString() );
+
+		return taskList;
+	}
 	
+	/**
+	 * Just a helper method to create a ArrayList<Task> for better top-down
+	 *  readbility of the Week 8 main().
+	 * 
+	 * @since 0.8
+	 * 
+	 * @return		An ArrayList<Task> containing a List of TaskFilters.
+	 * 
+	 */
+	private static ArrayList<TaskFilter> createTaskFilterList(List<Task> taskList) {
+		
+		ArrayList<TaskFilter> taskFilterList = new ArrayList<TaskFilter>();
+		taskFilterList.add( new TaskFilter(taskList, FIELD_TASK_NAME, SORT_ASC) {
+			@Override
+			public String toString() {
+				/* + Return ONLY the Task List
+				 *    (not the other TaskFilter member fields)
+				 * + Change line separator character
+				*/
+				StringBuffer output = new StringBuffer("\n\n"
+						+ "*****************************\n\n"
+						+ "This is an @OVERRIDDEN TaskFilter.toString():\n");
+				
+				if (this.getArray() != null) {
+					for(Task t : this.getArray()) {
+						output.append(t.toString()
+								+ "\n____________________________\n");
+					}
+				} else {
+					Iterator<Task> taskIterator = this.getList().listIterator();
+					while (taskIterator.hasNext()) {
+						output.append(taskIterator.next().toString());
+						if (taskIterator.hasNext()) {
+							output.append("\n_________________________\n");
+						}
+					}
+				}
+				output.append("\n\n*****************************\n");
+				return output.toString();
+			}
+		} );
+		taskFilterList.add( new TaskFilter(taskList, FIELD_START_DT, SORT_DESC) );
+		taskFilterList.add( new TaskFilter(taskList, FIELD_START_DT, SORT_ASC) );
+		taskFilterList.add( new TaskFilter(taskList, FIELD_END_DT, SORT_DESC) );
+		taskFilterList.add( new TaskFilter(taskList, FIELD_END_DT, SORT_ASC) );
+		taskFilterList.add( new TaskFilter(taskList, FIELD_COMPLETED, SORT_ASC) );
+		taskFilterList.add( new TaskFilter(taskList, FIELD_COMPLETED, SORT_DESC) );
+		
+		return taskFilterList;
+	}
+	
+	/**
+	 * Output a List of TaskFitlers to console.
+	 * 
+	 * @since 0.8
+	 * 
+	 * @param tskFltrLst	Input TaskFilters List<TaskFilter>
+	 * 
+	 */
 	private static void dumpList(List<TaskFilter> tskFltrLst) {
 		
 		Iterator<TaskFilter> taskFilterIterator = tskFltrLst.iterator();
